@@ -1,0 +1,13 @@
+{
+  "esversion": 6,
+
+  "strict": "global",
+
+  "globals": {
+    "window": true,
+    "document": true,
+    "console": true,
+    "browser": true,
+    "chrome": true
+  }
+}

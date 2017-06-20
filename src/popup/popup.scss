@@ -1,0 +1,121 @@
+$form-group-margin-bottom: 10px;
+
+@import "../../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
+
+$panel-bg: #eee;
+
+form {
+  display: flex;
+  flex-flow: column nowrap;
+  min-height: 100%;
+  max-height: 100%;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#controls {
+  flex: 0 1 auto;
+  background: $panel-bg;
+  padding: 10px 10px 0 10px;
+
+  .columns {
+    display: flex;
+    flex-flow: row nowrap;
+  }
+
+  .filters-col {
+    flex: 0 1 auto;
+
+    .checkbox-col {
+      display: flex;
+      flex-flow: row nowrap;
+    }
+
+    .checkbox {
+      margin: 0 10px 0 0;
+    }
+  }
+
+  .fast-filter-col {
+    flex: 1 1 auto;
+    margin-right: 10px;
+  }
+
+  .conflict-col {
+    flex: 0 1 auto;
+
+    .checkbox {
+      margin-top: 5px;
+    }
+  }
+}
+
+#listView {
+  $header-size: 20px;
+
+  flex: 1 1 auto;
+  display: flex;
+  flex-flow: row nowrap;
+  padding: 0 10px 10px 10px;
+  background: $panel-bg;
+
+  .source-col {
+    display: flex;
+    flex-flow: column nowrap;
+    padding: $header-size 5px 0 0;
+
+    button {
+      margin-bottom: 5px;
+    }
+  }
+
+  .media-col {
+    flex: 1 1 auto;
+    display: flex;
+    flex-flow: column nowrap;
+    overflow: hidden;
+
+    ul {
+      flex: 1 1 auto;
+
+      &.header {
+        font-weight: bold;
+        height: $header-size;
+      }
+
+      &:not(.header) {
+        max-height: 300px;
+        overflow-y: scroll;
+        background: #fff;
+        border: 1px solid $input-border;
+        border-radius: $border-radius-base;
+      }
+
+      li {
+        display: flex;
+        flex-flow: row nowrap;
+        padding: 0 10px;
+
+        div {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        div:nth-child(1) {
+          min-width: 90%;
+          max-width: 90%;
+        }
+
+        div:nth-child(2) {
+          min-width: 10%;
+          max-width: 10%;
+        }
+      }
+    }
+  }
+}

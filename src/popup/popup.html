@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html ng-app="dsPopupApp" ng-strict-di>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="lib/ui-bootstrap-custom-2.5.0-csp.css">
+    <link rel="stylesheet" href="lib/font-awesome.min.css">
+    <link rel="stylesheet" href="popup.css">
+  </head>
+
+  <body ng-controller="PopupCtrl">
+
+    <form name="dsPopupForm">
+
+      <div id="controls">
+        <!-- download location -->
+        <div class="form-group">
+          <label class="control-label">Download To</label>
+          <div class="input-group">
+            <input class="form-control input-sm" type="text" ng-model="controls.downloadPath"></input>
+            <span class="input-group-btn">
+              <button class="btn btn-primary btn-sm">Download</button>
+            </span>
+          </div>
+        </div>
+
+        <!-- built-in filters -->
+        <div class="columns">
+          <div class="filters-col">
+            <label class="control-label">Filters</label>
+            <div class="form-group checkbox-col">
+              <ul>
+                <li class="checkbox">
+                  <label>
+                    <input type="checkbox"></input>
+                    Images
+                  </label>
+                </li>
+                <li class="checkbox">
+                  <label>
+                    <input type="checkbox"></input>
+                    Video
+                  </label>
+                </li>
+                <li class="checkbox">
+                  <label>
+                    <input type="checkbox"></input>
+                    Audio
+                  </label>
+                </li>
+              </ul>
+              <ul>
+                <li class="checkbox">
+                  <label>
+                    <input type="checkbox"></input>
+                    Archives
+                  </label>
+                </li>
+                <li class="checkbox">
+                  <label>
+                    <input type="checkbox"></input>
+                    Executable
+                  </label>
+                </li>
+                <li class="checkbox">
+                  <label>
+                    <input type="checkbox"></input>
+                    Documents
+                  </label>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- fast filters -->
+          <div class="fast-filter-col">
+            <div class="form-group">
+              <label class="control-label">Fast Filter</label>
+              <input class="form-control input-sm" type="text" ng-model="controls.fastFilter"></input>
+            </div>
+          </div>
+
+          <!-- conflict action -->
+          <div class="conflict-col">
+            <div class="form-group">
+              <label class="control-label">On Conflict</label>
+              <select class="form-control input-sm">
+                <option value="rename" selected>Rename</option>
+                <option value="overwrite">Overwrite</option>
+                <option value="prompt">Prompt</option>
+              </select>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox"></input>
+                  Clear history
+                </label>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- /actions -->
+
+      <div id="listView">
+        <!-- source picker -->
+        <div class="source-col">
+          <button class="btn btn-default">
+            <i class="fa fa-link"></i>
+          </button>
+          <button class="btn btn-default">
+            <i class="fa fa-image"></i>
+          </button>
+        </div>
+
+        <!-- list view -->
+        <div class="media-col">
+          <ul class="header">
+            <li>
+              <div>URL</div>
+              <div>Type</div>
+            </li>
+          </ul>
+          <ul>
+            <li ng-repeat="item in media.links">
+              <div>
+                <input type="checkbox" ng-model="item.checked"></input>
+                {{::item.url}}
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div><!-- /lsitView -->
+
+    </form>
+
+    <!-- Library components -->
+    <script src="lib/angular.min.js"></script>
+    <script src="lib/ui-bootstrap-custom-tpls-2.5.0.min.js"></script>
+    <script src="lib/fixed-table-header.min.js"></script>
+    <script src="popup.js"></script>
+
+  </body>
+
+</html>
