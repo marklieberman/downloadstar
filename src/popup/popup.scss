@@ -1,14 +1,28 @@
 $form-group-margin-bottom: 10px;
 
-@import "../../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
+@import "lib/bootstrap-custom";
 
+$min-width: 800px;
+$min-height: 600px;
 $panel-bg: #eee;
+
+html,
+body,
+form {
+  width: $min-width;
+  min-width: $min-width;
+  height: $min-height;
+  min-height: $min-height;
+  overflow: hidden;
+}
+
+body {
+  background: linear-gradient(180deg, #fff 10px, #eee 50px, #eee 100%);
+}
 
 form {
   display: flex;
   flex-flow: column nowrap;
-  min-height: 100%;
-  max-height: 100%;
 }
 
 ul {
@@ -17,9 +31,19 @@ ul {
   margin: 0;
 }
 
+#loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 #controls {
   flex: 0 1 auto;
-  background: $panel-bg;
   padding: 10px 10px 0 10px;
 
   .columns {
@@ -43,6 +67,11 @@ ul {
   .fast-filter-col {
     flex: 1 1 auto;
     margin-right: 10px;
+
+    .checkbox {
+      margin-top: 5px;
+      float: right;
+    }
   }
 
   .conflict-col {
@@ -60,8 +89,8 @@ ul {
   flex: 1 1 auto;
   display: flex;
   flex-flow: row nowrap;
+  overflow: hidden;
   padding: 0 10px 10px 10px;
-  background: $panel-bg;
 
   .source-col {
     display: flex;
@@ -80,41 +109,65 @@ ul {
     overflow: hidden;
 
     ul {
-      flex: 1 1 auto;
+      flex: 0 1 auto;
+      display: flex;
 
-      &.header {
+      &.list-head {
+        flex: 0 1 auto;
+        display: flex;
+        flex-flow: row nowrap;
+        margin-right: 18px;
         font-weight: bold;
-        height: $header-size;
       }
 
-      &:not(.header) {
-        max-height: 300px;
+      &.list-body {
+        flex: 1 1 auto;
+        display: flex;
+        flex-flow: column nowrap;
         overflow-y: scroll;
         background: #fff;
         border: 1px solid $input-border;
         border-radius: $border-radius-base;
+
+        li {
+          flex: 0 1 auto;
+          display: flex;
+          flex-flow: row nowrap;
+          justify-content: flex-start;
+          border-bottom: 1px solid $input-border;
+          padding: 2px 0;
+          cursor: pointer;
+        }
+
+        .checkbox {
+          margin: 0;
+        }
+
+        .match {
+          background-color: lighten($brand-success, 33%);
+        }
       }
 
-      li {
-        display: flex;
-        flex-flow: row nowrap;
-        padding: 0 10px;
+      .col {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        padding-left: 5px;
+      }
 
-        div {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
+      .url-col {
+        width: 80%;
+        max-width: 80%;
+      }
 
-        div:nth-child(1) {
-          min-width: 90%;
-          max-width: 90%;
-        }
+      .type-col {
+        width: 10%;
+        max-width: 10%;
+      }
 
-        div:nth-child(2) {
-          min-width: 10%;
-          max-width: 10%;
-        }
+      .mask-col {
+        width: 10%;
+        max-width: 10%;
       }
     }
   }

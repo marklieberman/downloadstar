@@ -13,7 +13,8 @@
 
   "permissions": [
     "activeTab",
-    "downloads"
+    "downloads",
+    "storage"
   ],
 
   "browser_action": {
@@ -24,6 +25,12 @@
     },
     "default_title": "Download Star",
     "default_popup": "popup/popup.html"
+  },
+
+  "background": {
+    "scripts": [
+      "background/download.js"
+    ]
   }
 
 }
