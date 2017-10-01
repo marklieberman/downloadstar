@@ -38,6 +38,7 @@ app.controller('PopupCtrl', [
 
     // ----- Publish scope functions -----
     $scope.getMediaList = getMediaList;
+    $scope.getMediaListChecked = getMediaListChecked;
     $scope.evaluateFilters = evaluateFilters;
     $scope.downloadFiles = downloadFiles;
 
@@ -215,6 +216,10 @@ app.controller('PopupCtrl', [
 
         item.matches = item.matches.join(', ');
       });
+    }
+
+    function getMediaListChecked () {
+      return getMediaList().filter(item => item.checked);
     }
 
     function downloadFiles () {
