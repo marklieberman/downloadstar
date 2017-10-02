@@ -75,7 +75,7 @@ function getLinksFromText (parentNode = 'body', exclude = []) {
   // https://stackoverflow.com/a/8218223
   const URL_REGEX = new RegExp(/(?:https?|ftp):\/\/[\w-]+(?:\.[\w-]+)+\/([\w.,@?^=%&amp;:/~+#-]*)\.([\w]+)/g);
   const excludeList = exclude.map(tag => `:not(${tag})`).join('');
-  const haystack = document.querySelectorAll(`${parentNode} *${excludeList}`);
+  const haystack = document.querySelectorAll(`${parentNode}, ${parentNode} *${excludeList}`);
   let hash = {};
   let needle;
   haystack.forEach(node => {
@@ -105,7 +105,9 @@ var urls = {
     getPropsFromTags('object', 'src')
   ),
   text: [].concat(
-    getLinksFromText('body')
+    getLinksFromText('div', ['p', 'span']),
+    getLinksFromText('p'),
+    getLinksFromText('span')
   )
 };
 
