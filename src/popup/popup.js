@@ -88,7 +88,6 @@ app.controller('PopupCtrl', [
           return item;
         }));
 
-        console.log(frame);
         media.text = media.text.concat(frame.text.map(item => {
           item.checked = false;
           return item;
