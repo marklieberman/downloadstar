@@ -21,7 +21,7 @@
           <div class="input-group">
             <input class="form-control input-sm" type="text" name="downloadPath" ng-model="controls.downloadPath"></input>
             <span class="input-group-btn">
-              <button class="btn btn-primary btn-sm" ng-click="downloadFiles()">Download</button>
+                <button class="btn btn-primary btn-sm" ng-click="downloadFiles()" ng-disabled="!getMediaListChecked().length">Download ({{getMediaListChecked().length}})</button>
             </span>
           </div>
         </div>
