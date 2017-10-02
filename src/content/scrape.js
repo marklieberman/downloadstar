@@ -73,20 +73,19 @@ function sortByUrl (a, b) {
 
 function getLinksFromText (parentNode = 'body', exclude = []) {
   // https://stackoverflow.com/a/8218223
-  const URL_REGEX = new RegExp(/(?:https?|ftp):\/\/[\w-]+(?:\.[\w-]+)+\/([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])/g);
+  const URL_REGEX = new RegExp(/(?:https?|ftp):\/\/[\w-]+(?:\.[\w-]+)+\/([\w.,@?^=%&amp;:/~+#-]*)\.([\w]+)/g);
   const excludeList = exclude.map(tag => `:not(${tag})`).join('');
   const haystack = document.querySelectorAll(`${parentNode} *${excludeList}`);
   let hash = {};
-  let match;
+  let needle;
   haystack.forEach(node => {
-    while ((match = URL_REGEX.exec(node.innerText)) !== null) {
-      const url = match[0];
-      const file = match[1].split('.');
+    while ((needle = URL_REGEX.exec(node.innerText)) !== null) {
+      const url = needle[0];
       if (!!url && !hash[url] && isValidUrl(url)) {
         hash[url] = {
           url: url,
-          filename: file[0],
-          type: file[1]
+          filename: needle[1],
+          type: needle[2]
         };
       }
     }
