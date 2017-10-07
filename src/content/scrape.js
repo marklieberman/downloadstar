@@ -80,12 +80,12 @@ function getLinksFromText (parentNode = 'body', exclude = []) {
   let needle;
   haystack.forEach(node => {
     while ((needle = URL_REGEX.exec(node.innerText)) !== null) {
-      const url = needle[0];
+      const [ url, filename, type ] = needle;
       if (!!url && !hash[url] && isValidUrl(url)) {
         hash[url] = {
-          url: url,
-          filename: needle[1],
-          type: needle[2]
+          url,
+          filename,
+          type
         };
       }
     }
