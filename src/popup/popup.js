@@ -53,6 +53,7 @@ app.controller('PopupCtrl', [
         browser.storage.local.set({ filters: newValue });
         $scope.evaluateFilters($scope.media.links);
         $scope.evaluateFilters($scope.media.embeds);
+        $scope.evaluateFilters($scope.media.text);
       }
     }, true);
 
@@ -86,8 +87,13 @@ app.controller('PopupCtrl', [
           item.checked = false;
           return item;
         }));
+
+        media.text = media.text.concat(frame.text.map(item => {
+          item.checked = false;
+          return item;
+        }));
         return media;
-      }, { links: [], embeds: [] });
+      }, { links: [], embeds: [], text: [] });
     }));
 
     // Close the popup if scraping failed.
@@ -103,6 +109,8 @@ app.controller('PopupCtrl', [
           return $scope.media.links;
         case 'embeds':
           return $scope.media.embeds;
+      case 'text':
+        return $scope.media.text;
       }
       return [];
     }

@@ -71,6 +71,29 @@ function sortByUrl (a, b) {
   return a.url.localeCompare(b.url);
 }
 
+function getLinksFromText (parentNode = 'body', exclude = []) {
+  // https://stackoverflow.com/a/8218223
+  const URL_REGEX = new RegExp(/(?:https?|ftp):\/\/[\w-]+(?:\.[\w-]+)+\/([\w.,@?^=%&amp;:/~+#-]*)\.([\w]+)/g);
+  const excludeList = exclude.map(tag => `:not(${tag})`).join('');
+  const haystack = document.querySelectorAll(`${parentNode}, ${parentNode} *${excludeList}`);
+  let hash = {};
+  let needle;
+  haystack.forEach(node => {
+    while ((needle = URL_REGEX.exec(node.innerText)) !== null) {
+      const [ url, filename, type ] = needle;
+      if (!!url && !hash[url] && isValidUrl(url)) {
+        hash[url] = {
+          url,
+          filename,
+          type
+        };
+      }
+    }
+  });
+
+  return Object.keys(hash).map(key => hash[key]);
+}
+
 var urls = {
   links: [].concat(
     getPropsFromTags('a', 'href')
@@ -80,11 +103,17 @@ var urls = {
     getPropsFromTags('video', 'src'),
     getPropsFromTags('audio', 'src'),
     getPropsFromTags('object', 'src')
+  ),
+  text: [].concat(
+    getLinksFromText('div', ['p', 'span']),
+    getLinksFromText('p'),
+    getLinksFromText('span')
   )
 };
 
 urls.links.sort(sortByUrl);
 urls.embeds.sort(sortByUrl);
+urls.text.sort(sortByUrl);
 
 // Return value for executeScript().
 urls;
