@@ -54,7 +54,7 @@ function downloadItems (filteredItems, data) {
 
     browser.downloads.download({
       url: item.url,
-      filename: filename,
+      filename: decodeURI(filename),
       conflictAction: data.conflictAction,
       saveAs: false
     }).then(downloadId => {
