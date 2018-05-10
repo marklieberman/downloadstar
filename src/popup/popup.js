@@ -8,12 +8,12 @@ app.controller('PopupCtrl', [
   '$scope',
   function ($scope) {
 
-    var IMAGE_FILTER = /\.(jpe?g|png|gif|bmp)\b/;
-    var VIDEO_FILTER = /\.(webm|mp4|mkv|m4v|mov|avi)\b/;
-    var AUDIO_FILTER = /\.(mp3|flac|m4a|aac|ape|ogg)\b/;
-    var ARCHIVE_FILTER = /\.(zip|rar|7z)\b/;
-    var EXE_FILTER = /\.(exe|dmg|apk|xpi)\b/;
-    var DOCUMENT_FILTER = /\.(doc[xm]?|xls[xm]?|pdf|xps|eps)\b/;
+    var IMAGE_FILTER = /\.(jpe?g|png|gif|bmp|jp2|tga|tiff?|svg|wmf)\b/;
+    var VIDEO_FILTER = /\.(webm|mp4|m[124ko]v|avi|mpe?g|flv|wmv|3gp|og[mv]|asf|rm(vb)?)\b/;
+    var AUDIO_FILTER = /\.(mp3|[af]lac|mp?4a|aac|ape|og[ag]|wma|wa?v|ac3|dts|opus|ra)\b/;
+    var ARCHIVE_FILTER = /\.(g?zip|rar|[7gnx]z|arj|ace|lha|paq|rk|iso)\b/;
+    var EXE_FILTER = /\.(exe|dmg|apk|xpi|msi)\b/;
+    var DOCUMENT_FILTER = /\.(doc[xm]?|xls[xm]?|ppt[xm]?|pdf|[xe]ps|cb[rz]|txt|rtf|nfo)\b/;
 
     // ----- Scope variables -----
     $scope.error = false;

@@ -2,7 +2,7 @@
 
   "manifest_version": 2,
   "name": "Download Star",
-  "version": "1.0.0",
+  "version": "1.0.1",
 
   "description": "Download all items in a webpage that match a pattern",
 
