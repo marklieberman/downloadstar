@@ -161,7 +161,7 @@ app.controller('PopupCtrl', [
       try {
         if ($scope.filters.fastFilterRegex) {
           // Fast filter is a regular expression.
-          let regex = new RegExp($scope.filters.fastFilter, 'gi');
+          let regex = new RegExp($scope.filters.fastFilter, 'i');
           return url => regex.test(url);
         } else {
           // Fast filter is a wildcard pattern.
