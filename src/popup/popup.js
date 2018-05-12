@@ -8,12 +8,12 @@ app.controller('PopupCtrl', [
   '$scope',
   function ($scope) {
 
-    var IMAGE_FILTER = /\.(jpe?g|png|gif|bmp|jp2|tga|tiff?|svg|wmf)\b/;
-    var VIDEO_FILTER = /\.(webm|mp4|m[124ko]v|avi|mpe?g|flv|wmv|3gp|og[mv]|asf|rm(vb)?)\b/;
-    var AUDIO_FILTER = /\.(mp3|[af]lac|mp?4a|aac|ape|og[ag]|wma|wa?v|ac3|dts|opus|ra)\b/;
-    var ARCHIVE_FILTER = /\.(g?zip|rar|[7gnx]z|arj|ace|lha|paq|rk|iso)\b/;
-    var EXE_FILTER = /\.(exe|dmg|apk|xpi|msi)\b/;
-    var DOCUMENT_FILTER = /\.(doc[xm]?|xls[xm]?|ppt[xm]?|pdf|[xe]ps|cb[rz]|txt|rtf|nfo)\b/;
+    var IMAGE_FILTER = /\.(jpe?g|png|gif|bmp|jp2|tga|tiff?|svg|wmf)\b/i;
+    var VIDEO_FILTER = /\.(webm|mp4|m[124ko]v|avi|mpe?g|flv|wmv|3gp|og[mv]|asf|rm(vb)?)\b/i;
+    var AUDIO_FILTER = /\.(mp3|[af]lac|mp?4a|aac|ape|og[ag]|wma|wa?v|ac3|dts|opus|ra)\b/i;
+    var ARCHIVE_FILTER = /\.(g?zip|rar|[7gnx]z|arj|ace|lha|paq|rk|iso)\b/i;
+    var EXE_FILTER = /\.(exe|dmg|apk|xpi|msi)\b/i;
+    var DOCUMENT_FILTER = /\.(doc[xm]?|xls[xm]?|ppt[xm]?|pdf|[xe]ps|cb[rz]|txt|rtf|nfo)\b/i;
 
     // ----- Scope variables -----
     $scope.error = false;
