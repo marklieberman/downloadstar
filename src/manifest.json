@@ -2,13 +2,13 @@
 
   "manifest_version": 2,
   "name": "Download Star",
-  "version": "1.0.1",
+  "version": "1.0.2",
 
   "description": "Download all items in a webpage that match a pattern",
 
   "icons": {
-    "48": "icons/icon-48.png",
-    "96": "icons/icon-96.png"
+    "48": "icons/icon.svg",
+    "96": "icons/icon.svg"
   },
 
   "permissions": [
@@ -19,10 +19,7 @@
 
   "browser_action": {
     "browser_style": false,
-    "default_icon": {
-      "19": "icons/popup-19.png",
-      "38": "icons/popup-38.png"
-    },
+    "default_icon": "icons/icon.svg",
     "default_title": "Download Star",
     "default_popup": "popup/popup.html"
   },

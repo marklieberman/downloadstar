@@ -17,7 +17,7 @@ var sources = {
   ]
 };
 
-gulp.task('default', [ 'watch' ]);
+gulp.task('default', [ 'lint', 'sass', 'watch' ]);
 
 gulp.task('watch', function () {
   gulp.watch(sources.js, [ 'lint' ]);
@@ -38,6 +38,8 @@ gulp.task('lint', function () {
 
 gulp.task('dist', [ 'sass' ], function () {
   return gulp.src(sources.dist)
-    .pipe(zip('downloadstar.xpi'))
+    .pipe(zip('downloadstar.xpi', {
+      compress: false
+    }))
     .pipe(gulp.dest('dist'));
 });

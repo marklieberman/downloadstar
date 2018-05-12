@@ -116,4 +116,4 @@ urls.embeds.sort(sortByUrl);
 urls.text.sort(sortByUrl);
 
 // Return value for executeScript().
-urls;
+urls; // jshint ignore:line
