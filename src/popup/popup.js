@@ -37,6 +37,7 @@ app.controller('PopupCtrl', [
     $scope.media = [];
 
     // ----- Publish scope functions -----
+    $scope.checkDownloadPath = checkDownloadPath;
     $scope.getMediaList = getMediaList;
     $scope.getMediaListChecked = getMediaListChecked;
     $scope.evaluateFilters = evaluateFilters;
@@ -102,6 +103,10 @@ app.controller('PopupCtrl', [
     }));
 
     // Functions -------------------------------------------------------------------------------------------------------
+
+    function checkDownloadPath (path) {
+      return (path && /^(\\{1,2}|\/|[a-zA-Z]:)/.test(path));
+    }
 
     function getMediaList () {
       switch ($scope.controls.sourceList) {

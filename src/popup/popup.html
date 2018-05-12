@@ -18,11 +18,22 @@
         <!-- download location -->
         <div class="form-group">
           <label class="control-label">Download To</label>
-          <div class="input-group">
-            <input class="form-control input-sm" type="text" name="downloadPath" ng-model="controls.downloadPath"></input>
-            <span class="input-group-btn">
-                <button class="btn btn-primary btn-sm" ng-click="downloadFiles()" ng-disabled="!getMediaListChecked().length">Download ({{getMediaListChecked().length}})</button>
+          <div class="input-group input-group-sm">
+            <span class="input-group-addon ">
+              Downloads/
             </span>
+            <input class="form-control" type="text" name="downloadPath" ng-model="controls.downloadPath"></input>
+            <span class="input-group-btn">
+              <button class="btn btn-primary"
+                      ng-click="downloadFiles()"
+                      ng-disabled="checkDownloadPath(controls.downloadPath) || !getMediaListChecked().length">
+                Download ({{getMediaListChecked().length}})
+              </button>
+            </span>
+          </div>
+          <div class="text-danger"
+               ng-show="checkDownloadPath(controls.downloadPath)">
+            This must be relative to Firefox's download folder.
           </div>
         </div>
 

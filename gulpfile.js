@@ -9,6 +9,7 @@ var sources = {
     '!**/lib/**'
   ],
   sass: [
+    'src/popup/lib/*.scss',
     'src/popup/popup.scss'
   ],
   dist: [

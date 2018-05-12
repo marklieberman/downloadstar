@@ -50,7 +50,9 @@ function downloadItems (filteredItems, data) {
   filteredItems.forEach(item => {
     // Determine the target filename.
     let historyKey = item.url + data.downloadPath;
-    let filename = [ data.downloadPath, item.filename ].join('/');
+    let filename = [ data.downloadPath, item.filename ]
+      .filter(part => !!part)
+      .join('/');
 
     browser.downloads.download({
       url: item.url,
