@@ -18,7 +18,7 @@
   ],
 
   "browser_action": {
-    "browser_style": false,
+    "browser_style": true,
     "default_icon": "icons/icon.svg",
     "default_title": "Download Star",
     "default_popup": "popup/popup.html"
@@ -28,6 +28,12 @@
     "scripts": [
       "background/download.js"
     ]
+  },
+
+  "options_ui": {
+    "browser_style": true,
+    "page": "options/options.html",
+    "open_in_tab": false
   }
 
 }
