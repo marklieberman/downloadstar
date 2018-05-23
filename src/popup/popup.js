@@ -35,6 +35,10 @@ app.controller('PopupCtrl', [
       fastFilterRegex: false
     };
     $scope.media = [];
+    $scope.listIndex = {
+      first: null,
+      last: null
+    }
 
     // ----- Publish scope functions -----
     $scope.checkDownloadPath = checkDownloadPath;
@@ -42,6 +46,7 @@ app.controller('PopupCtrl', [
     $scope.getMediaListChecked = getMediaListChecked;
     $scope.evaluateFilters = evaluateFilters;
     $scope.downloadFiles = downloadFiles;
+    $scope.toggleItemCheck = toggleItemCheck;
 
     // ----- Scope watch -----
     $scope.$watch('controls', (newValue, oldValue) => {
@@ -55,6 +60,7 @@ app.controller('PopupCtrl', [
         $scope.evaluateFilters($scope.media.links);
         $scope.evaluateFilters($scope.media.embeds);
         $scope.evaluateFilters($scope.media.text);
+        updateLastIndex();
       }
     }, true);
 
@@ -79,17 +85,20 @@ app.controller('PopupCtrl', [
     promise.then(frames => $scope.$apply(() => {
       $scope.scraping = false;
       $scope.media = frames.reduce((media, frame) => {
-        media.links = media.links.concat(frame.links.map(item => {
+        media.links = media.links.concat(frame.links.map((item, index) => {
+          item.index = index;
           item.checked = false;
           return item;
         }));
 
-        media.embeds = media.embeds.concat(frame.embeds.map(item => {
+        media.embeds = media.embeds.concat(frame.embeds.map((item, index) => {
+          item.index = index;
           item.checked = false;
           return item;
         }));
 
-        media.text = media.text.concat(frame.text.map(item => {
+        media.text = media.text.concat(frame.text.map((item, index) => {
+          item.index = index;
           item.checked = false;
           return item;
         }));
@@ -252,6 +261,40 @@ app.controller('PopupCtrl', [
           eraseHistory: $scope.controls.eraseHistory
         }
       });
+    }
+
+    function updateLastIndex() {
+      // Update listIndex positions
+      const activeMediaList = $scope.getMediaListChecked().length ? $scope.getMediaListChecked() : $scope.getMediaList();
+      $scope.listIndex = {
+        first: activeMediaList[0].index,
+        last: activeMediaList[activeMediaList.length - 1].index,
+      }
+    }
+
+    function toggleItemCheck(event, item) {
+      if (event.shiftKey) {
+        let { first, last } = { ...$scope.listIndex };
+
+        if (item.index > last) {
+          first = last + 1;
+          last = item.index;
+        } else if (item.index <= first || item.index >= first) {
+          first = item.index;
+        }
+
+        multiSelectShiftClick(first, last);
+      } else {
+        item.checked = !item.checked;
+      }
+      updateLastIndex();
+    }
+
+    function multiSelectShiftClick(from, to) {
+      for (let i = from; i <= to; i++) {
+        const item = $scope.getMediaList()[i];
+        item.checked = !item.checked;
+      }
     }
 
   }]);

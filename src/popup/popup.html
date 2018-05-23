@@ -153,7 +153,7 @@
           <ul class="list-body">
             <li ng-repeat="item in getMediaList()"
                 ng-class="{'match':item.checked}"
-                ng-click="item.checked = !item.checked" title="{{::item.url}}">
+                ng-click="toggleItemCheck($event, item)" title="{{::item.url}}">
               <div class="col url-col">
                 <input type="checkbox" ng-checked="item.checked"></input>
                 {{::item.url}}
