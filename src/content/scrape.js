@@ -55,7 +55,7 @@ function getFileMeta (item, element) {
 
 function getPropsFromTags (tagName, property) {
   let hash = {};
-  Array.prototype.slice.call(document.getElementsByTagName(tagName)).forEach(element => {
+  Array.prototype.slice.call(document.querySelectorAll(tagName)).forEach(element => {
     let url = element[property];
     if (!!url && !hash[url] && isValidUrl(url)) {
       let item = { url: url };
@@ -100,8 +100,8 @@ var urls = {
   ),
   embeds: [].concat(
     getPropsFromTags('img', 'src'),
-    getPropsFromTags('video', 'src'),
-    getPropsFromTags('audio', 'src'),
+    getPropsFromTags(['video', 'video > source'], 'src'),
+    getPropsFromTags(['audio', 'audio > source'], 'src'),
     getPropsFromTags('object', 'src')
   ),
   text: [].concat(
