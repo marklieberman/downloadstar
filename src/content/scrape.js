@@ -55,7 +55,7 @@ function getFileMeta (item, element) {
 
 function getPropsFromTags (tagName, property) {
   let hash = {};
-  Array.prototype.slice.call(document.querySelectorAll(tagName)).forEach(element => {
+  document.querySelectorAll(tagName).forEach(element => {
     let url = element[property];
     if (!!url && !hash[url] && isValidUrl(url)) {
       let item = { url: url };
