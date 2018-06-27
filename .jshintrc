@@ -8,6 +8,17 @@
     "document": true,
     "console": true,
     "browser": true,
-    "chrome": true
+    "chrome": true,
+
+    "HTMLImageElement": true,
+    "HTMLAudioElement": true,
+    "HTMLVideoElement": true,
+
+    "URL": true,
+    "Blob": true,
+
+    "NodeFilter": true,
+
+    "moment": true
   }
 }

@@ -1,180 +1,408 @@
-<!DOCTYPE html>
+<!doctype html>
 <html ng-app="dsPopupApp" ng-strict-di>
   <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="lib/font-awesome.min.css">
+    <title>Download Star Popup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="popup.css">
   </head>
 
-  <body ng-controller="PopupCtrl">
-
-    <div id="loading" ng-show="scraping">
-      {{error ? 'Not Available' : 'Loading'}}
-    </div>
-
-    <form name="dsPopupForm" ng-hide="scraping">
-
-      <div id="controls">
+  <body ng-controller="PopupCtrl as vm">
+    <form name="dsPopupForm">
+      <!-- target controls -->
+      <div class="form-row target-controls">
         <!-- download location -->
-        <div class="form-group">
-          <label class="control-label">Download To</label>
+        <div class="form-group col">
           <div class="input-group input-group-sm">
-            <span class="input-group-addon ">
-              Downloads/
-            </span>
-            <input class="form-control" type="text" name="downloadPath" ng-model="controls.downloadPath"></input>
-            <span class="input-group-btn">
-              <button class="btn btn-primary"
-                      ng-click="downloadFiles()"
-                      ng-disabled="checkDownloadPath(controls.downloadPath) || !getMediaListChecked().length">
-                Download ({{getMediaListChecked().length}})
+            <div class="input-group-prepend">
+              <span class="input-group-text">
+                Downloads/
+              </span>
+            </div>
+            <input class="form-control download-location" type="text" name="downloadPath"
+                   ng-model="vm.controls.downloadPath"></input>
+            <div class="input-group-append">
+              <!-- bgein download button -->
+              <button class="btn btn-dark begin-download"
+                      ng-click="vm.downloadMediaItems()"
+                      ng-disabled="!vm.canProceedToDownload()"
+                      title="Begin download">
+                <i class="fa fa-download"></i>
+                ({{vm.countCheckedMediaItems()}})
               </button>
-            </span>
+            </div>
+            <div class="input-group-append">
+              <!-- toggle options button -->
+              <button class="btn btn-outline-secondary toggle-options" type="button"
+                      ng-class="{ 'active': vm.controls.showOptions }"
+                      ng-click="vm.controls.showOptions = !vm.controls.showOptions"
+                      title="Toggle settings">
+                <i class="fa fa-cog"></i>
+              </button>
+            </div>
           </div>
-          <div class="text-danger"
-               ng-show="checkDownloadPath(controls.downloadPath)">
+          <small class="text-danger"
+                 ng-show="vm.isDownloadPathAbsolute()">
             This must be relative to Firefox's download folder.
-          </div>
-        </div>
-
-        <!-- built-in filters -->
-        <div class="columns">
-          <div class="filters-col">
-            <label class="control-label">Filters</label>
-            <div class="form-group checkbox-col">
-              <ul>
-                <li class="checkbox">
-                  <label>
-                    <input type="checkbox" name="useImageFilter" ng-model="filters.useImageFilter"></input>
-                    Images
-                  </label>
-                </li>
-                <li class="checkbox">
-                  <label>
-                    <input type="checkbox" name="useVideoFilter" ng-model="filters.useVideoFilter"></input>
-                    Video
-                  </label>
-                </li>
-                <li class="checkbox">
-                  <label>
-                    <input type="checkbox" name="useAudioFilter" ng-model="filters.useAudioFilter"></input>
-                    Audio
-                  </label>
-                </li>
-              </ul>
-              <ul>
-                <li class="checkbox">
-                  <label>
-                    <input type="checkbox" name="useArchiveFilter" ng-model="filters.useArchiveFilter"></input>
-                    Archives
-                  </label>
-                </li>
-                <li class="checkbox">
-                  <label>
-                    <input type="checkbox" name="useExeFilter" ng-model="filters.useExeFilter"></input>
-                    Executable
-                  </label>
-                </li>
-                <li class="checkbox">
-                  <label>
-                    <input type="checkbox" name="useDocumentFilter" ng-model="filters.useDocumentFilter"></input>
-                    Documents
-                  </label>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- fast filters -->
-          <div class="fast-filter-col">
-            <div class="form-group">
-              <label class="control-label">Fast Filter</label>
-              <input class="form-control input-sm" type="text" name="fastFilter" ng-model="filters.fastFilter"></input>
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" name="fastFilterRegex" ng-model="filters.fastFilterRegex"></input>
-                  Regex
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <!-- conflict action -->
-          <div class="conflict-col">
-            <div class="form-group">
-              <label class="control-label">On Conflict</label>
-              <select class="form-control input-sm" name="conflictAction" ng-model="controls.conflictAction">
-                <option value="skip" selected>Skip</option>
-                <option value="uniquify">Rename</option>
-                <option value="overwrite">Overwrite</option>
-                <!-- <option value="prompt">Prompt</option> -->
-              </select>
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" name="eraseHistory" ng-model="controls.eraseHistory"></input>
-                  Clear history
-                </label>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-      </div><!-- /actions -->
-
-      <div id="listView">
-        <!-- source picker -->
-        <div class="source-col">
-          <button class="btn btn-default"
-                  ng-class="{'active':controls.sourceList=='links'}"
-                  ng-click="controls.sourceList='links'">
-            <i class="fa fa-link"></i>
-          </button>
-          <button class="btn btn-default"
-                  ng-class="{'active':controls.sourceList=='embeds'}"
-                  ng-click="controls.sourceList='embeds'">
-            <i class="fa fa-image"></i>
-          </button>
-          <button class="btn btn-default"
-                  ng-class="{'active':controls.sourceList=='text'}"
-                  ng-click="controls.sourceList='text'">
-            <i class="fa fa-font"></i>
-          </button>
-        </div>
-
-
-        <div class="media-col">
-          <ul class="list-head">
-            <li class="col url-col">URL</li>
-            <li class="col type-col">Type</li>
-            <li class="col mask-col">Mask</li>
-          </ul>
-
-          <ul class="list-body">
-            <li ng-repeat="item in getMediaList()"
-                ng-class="{'match':item.checked}"
-                ng-click="toggleItemCheck($event, item)" title="{{::item.url}}">
-              <div class="col url-col">
-                <input type="checkbox" ng-checked="item.checked"></input>
-                {{::item.url}}
-              </div>
-              <div class="col type-col" title="{{::item.type}}">
-                {{::item.type}}
-              </div>
-              <div class="col match-col" title="{{item.matches}}">
-                {{item.matches}}
-              </div>
-            </li>
-          </ul>
+          </small>
         </div>
       </div>
 
+      <!-- options controls -->
+      <div class="form-row options-controls"
+           ng-show="vm.controls.showOptions">
+        <!-- options tabs -->
+        <div class="form-group col">
+          <ul class="nav nav-tabs nav-justified">
+            <li class="nav-item">
+              <a class="nav-link" href="#"
+                 ng-class="{ 'active': vm.controls.tab === 'filters' }"
+                 ng-click="vm.controls.tab = 'filters'">
+                <i class="fa fa-filter"></i>
+                Filters
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#"
+                 ng-class="{ 'active': vm.controls.tab === 'naming' }"
+                 ng-click="vm.controls.tab = 'naming'">
+                <i class="fa fa-file-signature"></i>
+                Naming
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#"
+                 ng-class="{ 'active': vm.controls.tab === 'saving' }"
+                 ng-click="vm.controls.tab = 'saving'">
+                <i class="fa fa-save"></i>
+                Saving
+              </a>
+            </li>
+          </ul>
+          <!-- filters tab -->
+          <div class="tab-content filters-tab"
+               ng-show="vm.controls.tab === 'filters'">
+            <!-- built-in filters -->
+            <div class="built-in-filters">
+              <label>Built-in Filters</label>
+              <div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="useImageFilter"
+                         ng-model="vm.filters.image"
+                         ng-change="vm.evaluateFilters()"></input>
+                  <label class="form-check-label" for="useImageFilter">
+                    Images
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="useVideoFilter"
+                         ng-model="vm.filters.video"
+                         ng-change="vm.evaluateFilters()"></input>
+                  <label class="form-check-label" for="useVideoFilter">
+                    Video
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="useAudioFilter"
+                         ng-model="vm.filters.audio"
+                         ng-change="vm.evaluateFilters()"></input>
+                  <label class="form-check-label" for="useAudioFilter">
+                    Audio
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="useArchiveFilter"
+                         ng-model="vm.filters.archive"
+                         ng-change="vm.evaluateFilters()"></input>
+                  <label class="form-check-label" for="useArchiveFilter">
+                    Archive
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="useDocumentFilter"
+                         ng-model="vm.filters.document"
+                         ng-change="vm.evaluateFilters()"></input>
+                  <label class="form-check-label" for="useDocumentFilter">
+                    Document
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="useExeFilter"
+                         ng-model="vm.filters.executable"
+                         ng-change="vm.evaluateFilters()"></input>
+                  <label class="form-check-label" for="useExeFilter">
+                    Executable
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- fast filter -->
+            <div class="fast-filter">
+              <label>Fast Filter</label>
+              <div class="input-group input-group-sm">
+                <input class="form-control form-control-sm" type="text" name="fastFilter"
+                       ng-class="{ 'is-invalid': vm.fastFilterError }"
+                       ng-model="vm.controls.fastFilter"
+                       ng-model-options="{ debounce: 200 }"
+                       ng-change="vm.evaluateFilters()"></input>
+                <div class="input-group-append">
+                  <!-- toggle regex button -->
+                  <button class="btn btn-outline-secondary toggle-regex" type="button"
+                          ng-class="{ 'active': vm.controls.fastFilterRegex }"
+                          ng-click="vm.toggleFastFilterRegex()"
+                          title="Toggle regular expression mode">
+                    (.*)
+                  </button>
+                  <!-- clear fast filter button -->
+                  <button class="btn btn-outline-secondary clear-fast-filter" type="button"
+                          ng-click="vm.clearFastFilter()"
+                          title="Clear fast filer">
+                    <i class="fa fa-eraser"></i>
+                  </button>
+                </div>
+              </div>
+              <small class="text-danger"
+                      ng-show="vm.fastFilterError">
+                Not a valid regular expression
+              </small>
+            </div>
+          </div>
+          <!-- mask naming tab -->
+          <div class="tab-content mask-naming-tab"
+               ng-show="vm.controls.tab === 'naming'">
+            <!-- naming mask -->
+            <div class="naming-mask">
+              <label>Naming Mask (<a href="https://github.com/marklieberman/downloadstar/wiki/Naming-Mask-Expression-Guide" target="_blank">Guide</a>)</label>
+              <div class="input-group input-group-sm">
+                <input class="form-control" type="text" name="namingMask"
+                       ng-class="{ 'is-invalid': vm.namingMaskError }"
+                       ng-model="vm.controls.namingMask"
+                       ng-model-options="{ debounce: 200 }"
+                       ng-change="vm.evaluateNamingMask()"></input>
+                <div class="input-group-append">
+                  <!-- show metadata button -->
+                  <button class="btn btn-outline-secondary" type="button"
+                          ng-class="{ 'active': vm.controls.showMetadata }"
+                          ng-click="vm.controls.showMetadata = !vm.controls.showMetadata"
+                          title="Show collected metadata">
+                    <i class="fa fa-info-circle"></i>
+                  </button>
+                  <!-- clear naming mask button -->
+                  <button class="btn btn-outline-secondary" type="button"
+                          ng-click="vm.clearNamingMask()"
+                          title="Clear naming mask">
+                    <i class="fa fa-eraser"></i>
+                  </button>
+                </div>
+              </div>
+              <small class="text-danger"
+                      ng-show="vm.namingMaskError">
+                {{vm.namingMaskError}}
+              </small>
+            </div>
+          </div>
+          <!-- saving tab -->
+          <div class="tab-content saving-tab"
+               ng-show="vm.controls.tab === 'saving'">
+            <!-- conflict action -->
+            <div>
+              <label>On Conflict</label>
+              <select class="form-control form-control-sm"
+                      ng-model="vm.controls.conflictAction">
+                <option value="skip" selected>Skip</option>
+                <option value="uniquify">Rename</option>
+                <option value="overwrite">Overwrite</option>
+              </select>
+            </div>
+
+            <!-- clear history -->
+            <div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="eraseHistory"
+                      ng-model="vm.controls.eraseHistory"></input>
+                <label class="form-check-label" for="eraseHistory">
+                  Remove files from native manager after download
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- media table -->
+      <div class="form-row media-list">
+        <div class="form-group col">
+          <!-- loader displayed while scraping -->
+          <div class="scraping-loader"
+               ng-if="vm.scraping">
+            <i class="fa fa-pulse fa-4x fa-spinner"></i>
+          </div>
+
+          <!-- help text when table is empty -->
+          <div class="empty-table-help"
+               ng-if="!vm.scraping && !vm.visibleMedia.length">
+            <!-- no media could be scraped -->
+            <span ng-show="!vm.media.length">
+              Failed to find any media.
+            </span>
+
+            <!-- all media is hidden -->
+            <span ng-show="vm.media.length">
+              Nothing to display.
+              <!-- no sources are enabled -->
+              <a href="#"
+                 ng-hide="vm.isAnySourceEnabled()"
+                 ng-click="
+                   vm.controls.sources.embed = true;
+                   vm.controls.sources.link = true
+                 ">
+                Try enabling some media sources.
+              </a>
+              <!-- no items are checked and checked-only is enabled -->
+              <a href="#"
+                 ng-show="vm.controls.checkedOnly && !vm.countCheckedMediaItems()"
+                 ng-click="vm.controls.checkedOnly = false">
+                Try disabling show only checked items.
+              </a>
+              <!-- quick search is returning no results -->
+              <a href="#"
+                 ng-show="vm.search"
+                 ng-click="vm.search = ''">
+                Try clearing quick search.
+              </a>
+            </span>
+          </div>
+
+          <!-- media table -->
+          <table class="table table-striped table-hover"
+                 ng-hide="vm.scraping">
+            <tbody>
+              <tr ng-class="{
+                    'first-row': $first,
+                    'media-checked':item.checked
+                  }"
+                  ng-repeat="item in vm.visibleMedia = (vm.media | filter:vm.filterMediaSource | filter:vm.filterQuickSearch())"
+                  ng-click="vm.toggleMediaItemChecked(item)"
+                  title="{{::item.url}}">
+                <!-- media item column -->
+                <td class="media-item">
+                  <!-- URL with filename highlighting -->
+                  <url-with-filename media-item="item"></url-with-filename>
+                  <!-- badges -->
+                  <div class="badges">
+                    <span class="badge badge-secondary">
+                      {{::item.extension}}
+                    </span><!--
+                    --><span class="badge badge-success"
+                         ng-repeat="match in item.matches">
+                      {{match}}
+                    </span><!--
+                    --><span class="badge badge-info"
+                             ng-if="!item.isFilenameInUrl && !item.maskName">
+                      {{::item.getFilename()}}
+                    </span><!--
+                    --><span class="badge badge-dark"
+                             ng-if="item.maskName">
+                      {{item.maskName}}
+                    </span>
+                  </div>
+                  <!-- collected metadata for media -->
+                  <div class="metadata"
+                        ng-if="vm.controls.showMetadata">
+                    <div ng-show="item.width">
+                      <span>${width}</span>: {{::item.width}}
+                    </div>
+                    <div ng-show="item.height">
+                      <span>${height}</span>: {{::item.height}}
+                    </div>
+                    <div ng-show="item.alt">
+                      <span>${alt}</span>: {{::item.alt | ellipsis:120}}
+                    </div>
+                    <div ng-show="item.title">
+                      <span>${title}</span>: {{::item.title | ellipsis:120}}
+                    </div>
+                    <div ng-show="item.text">
+                      <span>${text}</span>: {{::item.text | ellipsis:120}}
+                    </div>
+                  </div>
+                </td>
+                <!-- media thumbnail column -->
+                <td class="media-thumb">
+                  <img ng-if="item.isImage()"
+                       ng-src="{{::item.url}}"
+                       remove-on-error></img>
+                  <video ng-if="item.isVideo()"
+                         ng-src="{{::item.url}}"
+                         remove-on-error></video>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- source controls -->
+      <div class="form-row source-controls">
+        <div class="form-group col">
+          <!-- enabled sources -->
+          <div class="btn-group source-select">
+            <button class="btn btn-outline-secondary btn-sm source-link" type="button"
+                    ng-class="{ 'active': vm.controls.sources.link }"
+                    ng-click="vm.controls.sources.link = !vm.controls.sources.link"
+                    title="Show media from links">
+              <i class="fa fa-link"></i>
+            </button>
+            <button class="btn btn-outline-secondary btn-sm source-embed" type="button"
+                    ng-class="{ 'active': vm.controls.sources.embed }"
+                    ng-click="vm.controls.sources.embed = !vm.controls.sources.embed"
+                    title="Show embedded media">
+              <i class="fa fa-image"></i>
+            </button>
+            <button class="btn btn-outline-secondary btn-sm source-text" type="button"
+                    ng-class="{ 'active': vm.controls.sources.text }"
+                    ng-click="vm.controls.sources.text = !vm.controls.sources.text"
+                    title="Show media from plain-text">
+              <i class="fa fa-font"></i>
+            </button>
+          </div>
+          <!-- show checked only -->
+          <div class="btn-group source-select">
+            <button class="btn btn-outline-secondary btn-sm checked-only" type="button"
+                    ng-class="{ 'active': vm.controls.checkedOnly }"
+                    ng-click="vm.controls.checkedOnly = !vm.controls.checkedOnly"
+                    title="Only show checked items">
+              <i class="fa fa-clipboard-check"></i>
+            </button>
+          </div>
+          <!-- quick search -->
+          <div class="input-group input-group-sm quick-search">
+            <div class="input-group-prepend">
+              <span class="input-group-text">
+                <i class="fa fa-search"></i>
+              </span>
+            </div>
+            <input class="form-control" type="text"
+                   ng-model="vm.search"
+                   ng-model-options="{ debounce: 200 }"
+                   placeholder="Quick search"></input>
+          </div>
+          <!-- scrape all tabs -->
+          <div>
+            <button class="btn btn-outline-secondary btn-sm scrape-all-tabs" type="button"
+                    ng-click="vm.scrapeAllTabs(true)"
+                    title="Scrape all tabs in current window">
+              <i class="fa fa-clone"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </form>
 
-    <!-- Library components -->
-    <script src="lib/angular.min.js"></script>
+    <!-- library components -->
+    <script src="../common/lib/angular.min.js"></script>
+    <script src="../common/lib/moment.min.js"></script>
     <script src="popup.js"></script>
 
   </body>
-
 </html>

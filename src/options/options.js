@@ -1,45 +1,43 @@
+/* global angular */
 'use strict';
 
-// Initialize the options interface.
-let inputKeepHistory = {
-  never: document.getElementById('keep-history-never'),
-  session: document.getElementById('keep-history-session'),
-  always: document.getElementById('keep-history-always')
-};
-let inputMaxHistory = document.getElementById('max-history');
-
-// Restore settings from local storage.
-browser.storage.local.get({
-  keepHistory: 'never',
-  maxHistory: 1000
-}).then(results => {
-  inputKeepHistory[results.keepHistory].checked = true;
-
-  // Disable max history when keep history is not always.
-  inputMaxHistory.disabled = !inputKeepHistory.always.checked;
-  inputMaxHistory.value = results.maxHistory;
-});
-
-// Bind event handlers to the form.
-let optionsForm = document.getElementById('options-form');
-optionsForm.addEventListener('submit', saveOptions);
-
-// Disable max history when keep history is not always.
-Object.keys(inputKeepHistory).forEach(key => {
-  inputKeepHistory[key].addEventListener('input', () => {
-    inputMaxHistory.disabled = !inputKeepHistory.always.checked;
-  });
-});
+var app = angular.module('dsPopupApp', []);
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Main controller for the options page.
+app.controller('OptionsCtrl', [
+  '$scope',
+  '$q',
+  function ($scope, $q) {
 
-// Save the options to local storage.
-function saveOptions () {
-  let keepHistory = Object.keys(inputKeepHistory)
-    .find(key => inputKeepHistory[key].checked);
+    var vm = this;
+    var doCheckSettings = null;
 
-  return browser.storage.local.set({
-    keepHistory,
-    maxHistory: Number(inputMaxHistory.value)
-  });
-}
+    // ----- Controller init -----
+    vm.settings = {
+      maxConcurrentDownloads: 4,
+      keepHistory: 'always',
+      maxHistory: 1000
+    };
+
+    // Load settings from storage.
+    $q.when(browser.storage.local.get(vm.settings)).then(results => {
+      angular.copy(results, vm.settings);
+      doCheckSettings = angular.copy(results);
+    });
+
+    // Lifecycle and Callbacks -----------------------------------------------------------------------------------------
+
+    /**
+     * Invoked on every digest cycle.
+     */
+    vm.$doCheck = () => {
+      // Save settings whenever the settings change.
+      if (doCheckSettings && !angular.equals(doCheckSettings, vm.settings)) {
+        doCheckSettings = angular.copy(vm.settings);
+        browser.storage.local.set(vm.settings);
+        console.log('settings changed', vm.settings);
+      }
+    };
+
+  }]);

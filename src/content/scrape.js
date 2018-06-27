@@ -1,119 +1,163 @@
 'use strict';
 
-function isValidUrl (url) {
-  if (!url) {
-    return false;
-  }
-  if (url.startsWith('javascript')) {
-    return false;
-  }
-  return true;
+/**
+ * Filter invalid urls such as javascript: or blob: URLs.
+ */
+function isValidUrl (media) {
+  /* jshint scripturl:true */
+  return (
+    media.url &&
+    !media.url.startsWith('javascript:') &&
+    !media.url.startsWith('blob:')
+  );
 }
 
-function getOriginAndPath (url) {
-  let index;
-  if ((index = url.indexOf('?')) > -1) {
-    return url.substring(0, index);
+/**
+ * Get innertText of the element or parent node.
+ */
+function getNearbyText (element) {
+  let innerText = element.innerText || element.parentNode.innerText;
+  if (innerText) {
+    innerText = innerText.replace(/\s+/g, ' ').trim();
   }
-  if ((index = url.indexOf('#')) > -1) {
-    return url.substring(0, index);
-  }
-  return url;
+  return innerText || null;
 }
 
-function getFileType (item, element) {
-  let type;
-  if ((type = element.getAttribute('type')) != null) {
-    item.type = type.split('/').pop();
-    return;
-  }
-
-  item.type = 'html';
+/**
+ * Extract the URls for other media in various tags.
+ */
+function getMediaAndLinks () {
+  return Array.concat(
+    // Collect the target of links.
+    Array.from(document.getElementsByTagName('a'), a => {
+      return {
+        source: 'link',
+        url: decodeURI(a.href),
+        mime: null,
+        tag: a.tagName,
+        alt: a.alt || null,
+        title: a.title || null,
+        text: getNearbyText(a),
+        download: a.download || null
+      };
+    }),
+    // Collect the source of images.
+    Array.from(document.getElementsByTagName('img'), img => {
+      return {
+        source: 'embed',
+        url: decodeURI(img.src),
+        mime: 'image/unknown',
+        tag: img.tagName,
+        alt: img.alt || null,
+        title: img.title || null,
+        text: getNearbyText(img),
+        width: img.naturalWidth,
+        height: img.naturalHeight
+      };
+    })
+  );
 }
 
-function getFileMeta (item, element) {
-  let url = getOriginAndPath(item.url), match;
-
-  // Match: filename.ext
-  if ((match = /\b([^\/]+)\.([a-z0-9]+)(\?|#|$)/i.exec(url)) !== null) {
-    if (match[1] && match[2]) {
-      item.filename = match[1] + '.' + match[2];
-      item.type = match[2];
-      return;
+/**
+ * Extract the sources from audio/video/object tags.
+ */
+function getAudioVideoMedia () {
+  return Array.concat(
+    Array.from(document.getElementsByTagName('audio')),
+    Array.from(document.getElementsByTagName('video')),
+    Array.from(document.getElementsByTagName('object')),
+    Array.from(document.getElementsByTagName('embed')),
+    // Picture tags contain <source> and <img> tags but this code path only extracts the <source> tags.
+    Array.from(document.getElementsByTagName('picture'))
+  ).reduce((media, element) => {
+    // Collect the sources defined for this audio/video element.
+    let sources = Array.from(element.getElementsByTagName('source'), source => ({
+      source: 'embed',
+      url: decodeURI(source.src),
+      mime: source.type,
+      tag: element.tagName,
+      alt: element.alt || null,
+      title: element.title || null,
+      text: getNearbyText(element)
+    }));
+    if (sources.length) {
+      media.push(...sources);
     }
-  }
 
-  // Match /filename/
-  if ((match = /\/([^\/]+)\/?(\?|#|$)/i.exec(url)) !== null) {
-    if (match[1]) {
-      item.filename = match[1];
-      getFileType(item, element);
-      return;
+    // Add the current source if not already collected.
+    // Prefer the currentSrc property over the src attribute.
+    let currentSrc = element.currentSrc || element.getAttribute('src');
+    if (!sources.length || !sources.find(source => source.url === currentSrc)) {
+      media.push({
+        source: 'embed',
+        url: decodeURI(currentSrc),
+        mime: null,
+        tag: element.tagName,
+        alt: element.alt || null,
+        title: element.title || null,
+        text: getNearbyText(element)
+      });
     }
-  }
+
+    return media;
+  }, []);
 }
 
-function getPropsFromTags (tagName, property) {
-  let hash = {};
-  document.querySelectorAll(tagName).forEach(element => {
-    let url = element[property];
-    if (!!url && !hash[url] && isValidUrl(url)) {
-      let item = { url: url };
-      hash[url] = item;
-      getFileMeta(item, element);
-    }
-  });
-
-  return Object.keys(hash).map(key => hash[key]);
-}
-
-function sortByUrl (a, b) {
-  return a.url.localeCompare(b.url);
-}
-
-function getLinksFromText (parentNode = 'body', exclude = []) {
-  // https://stackoverflow.com/a/8218223
-  const URL_REGEX = new RegExp(/(?:https?|ftp):\/\/[\w-]+(?:\.[\w-]+)+\/([\w.,@?^=%&amp;:/~+#-]*)\.([\w]+)/g);
-  const excludeList = exclude.map(tag => `:not(${tag})`).join('');
-  const haystack = document.querySelectorAll(`${parentNode}, ${parentNode} *${excludeList}`);
-  let hash = {};
-  let needle;
-  haystack.forEach(node => {
-    while ((needle = URL_REGEX.exec(node.innerText)) !== null) {
-      const [ url, filename, type ] = needle;
-      if (!!url && !hash[url] && isValidUrl(url)) {
-        hash[url] = {
-          url,
-          filename,
-          type
-        };
+/**
+ * Extract plain text links from the document.
+ */
+function getLinksFromText () {
+  // Create a TreeWalker that visits all TEXT nodes in the document.
+  let treeWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT,
+    {
+      // Accept common text containing nodes.
+      acceptNode: (node) => {
+        if (node.tagName === 'P' || node.tagName === 'SPAN' || node.tagName === 'DIV') {
+          return NodeFilter.FILTER_ACCEPT;
+        }
+        return NodeFilter.FILTER_SKIP;
       }
-    }
-  });
+    }, false);
 
-  return Object.keys(hash).map(key => hash[key]);
+  // Matches between protocol and first whitespace character.
+  const URL_REGEX = /(https?|ftp):\/\/(\S+)/ig;
+
+  // Extract all plain-text links from the document text.
+  // Go to the sibling since once the node's innerText is inspected. Since innerText contains all child nodes' text,
+  // there is no reason to descend into the node.
+  let media = [], match;
+  while (treeWalker.nextSibling() || treeWalker.nextNode()) {
+    while ((match = URL_REGEX.exec(treeWalker.currentNode.innerText)) !== null) {
+      media.push({
+        source: 'text',
+        url: decodeURI(match[0])
+      });
+    }
+  }
+
+  return media;
 }
 
-var urls = {
-  links: [].concat(
-    getPropsFromTags('a', 'href')
-  ),
-  embeds: [].concat(
-    getPropsFromTags('img', 'src'),
-    getPropsFromTags(['video', 'video > source'], 'src'),
-    getPropsFromTags(['audio', 'audio > source'], 'src'),
-    getPropsFromTags('object', 'src')
-  ),
-  text: [].concat(
-    getLinksFromText('div', ['p', 'span']),
-    getLinksFromText('p'),
-    getLinksFromText('span')
-  )
-};
+// Collect the media from this tab.
+var media = Array.concat(
+  getMediaAndLinks(),
+  getAudioVideoMedia(),
+  getLinksFromText()
+).filter(isValidUrl);
 
-urls.links.sort(sortByUrl);
-urls.embeds.sort(sortByUrl);
-urls.text.sort(sortByUrl);
+// Eliminate duplicate URLs on first encountered basis.
+var duplicates = new Set();
+media = media.filter(item => {
+  if (duplicates.has(item.url)) {
+    return false;
+  } else {
+    duplicates.add(item.url);
+    return true;
+  }
+});
+
+// Sort the media by URL.
+media.sort((a, b) => a.url.localeCompare(b.url));
 
 // Return value for executeScript().
-urls; // jshint ignore:line
+media; // jshint ignore:line

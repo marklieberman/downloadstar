@@ -1,0 +1,52 @@
+<!doctype html>
+<html ng-app="dsPopupApp" ng-strict-di>
+  <head>
+    <meta charset="utf-8">
+    <title>Download Star Queue</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="queue.css">
+  </head>
+
+  <body ng-controller="QueueCtrl as vm">
+    <form name="dsPopupForm">
+      <div class="form-group">
+        Concurrent Downloads: {{vm.concurrentDownloads}}
+      </div>
+
+      <div class="form-group">
+        <button class="btn btn-secondary" type="button"
+                ng-click="vm.clearQueue()">
+          Clear Queue
+        </button>
+      </div>
+
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>URL</th>
+            <th>Filename</th>
+            <th>Target Path</th>
+            <th>State</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="item in vm.queue">
+            <td>{{item.downloadId}}</td>
+            <td>{{item.mediaItem.url}}</td>
+            <td>{{item.mediaItem.filename}}</td>
+            <td>{{item.targetPath}}</td>
+            <td>{{item.state}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <pre>{{ vm.queue | json }}</pre>
+    </form>
+
+    <!-- library components -->
+    <script src="../common/lib/angular.min.js"></script>
+    <script src="queue.js"></script>
+
+  </body>
+</html>

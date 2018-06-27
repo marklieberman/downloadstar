@@ -1,174 +1,198 @@
-$form-group-margin-bottom: 10px;
+/* import custom bootstrap 4 */
+@import "../common/bootstrap-popup";
 
-@import "lib/bootstrap-custom";
-
-$min-width: 800px;
-$min-height: 600px;
-$panel-bg: #eee;
-
-html,
-body,
-form {
-  width: $min-width;
-  min-width: $min-width;
-  height: $min-height;
-  min-height: $min-height;
-  overflow: hidden;
+.btn {
+  min-width: 32px;
 }
 
+.nav-link {
+  color: $body-color;
+  padding: 5px 5px;
+}
+
+label:not(.form-check-label) {
+  font-weight: bold;
+}
+
+/* import font-awesome 5 */
+@import "../common/font-awesome-custom";
+
 body {
+  /* try to resize to the maximum allowable */
+  min-width: 800px;
+  min-height: 600px;
+  width: 100%;
+  height: 100vh;
+
+  /* remove min-width when suspected to be in the overflow menu */
+  @media screen and (max-width: 400px) {
+    min-width: 0px;
+  }
+
   background: linear-gradient(180deg, #fff 10px, #eee 50px, #eee 100%);
+  overflow: hidden;
 }
 
 form {
   display: flex;
   flex-flow: column nowrap;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-#loading {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  padding: 5px 5px 0 5px;
+}
+
+/* target controls at the top of the window */
+.target-controls {}
+
+/* options controls below the target controls */
+.options-controls {
+  position: relative;
+  flex-shrink: 0;
+
+  .tab-content {
+    padding: 0 5px 5px 5px;
+    border-width: 0 1px 1px 1px;
+    border-style: solid;
+    border-color: $input-group-addon-border-color;
+    @include border-bottom-radius($nav-tabs-border-radius);
+  }
+
+  .toggle-regex {
+    font-family: sans-serif;
+    font-weight: 700;
+  }
+}
+
+/* loader displayed while scraping */
+.scraping-loader {
   display: flex;
+  flex-flow: column nowrap;
   justify-content: center;
   align-items: center;
+  height: 100%;
 }
 
-#controls {
-  flex: 0 1 auto;
-  padding: 10px 10px 0 10px;
+/* help text when media table is empty */
+.empty-table-help {
+  height: 100%;
 
-  .columns {
+  &, span {
     display: flex;
-    flex-flow: row nowrap;
-  }
-
-  .filters-col {
-    flex: 0 1 auto;
-
-    .checkbox-col {
-      display: flex;
-      flex-flow: row nowrap;
-    }
-
-    .checkbox {
-      margin: 0 10px 0 0;
-    }
-  }
-
-  .fast-filter-col {
-    flex: 1 1 auto;
-    margin-right: 10px;
-
-    .checkbox {
-      margin-top: 5px;
-      float: right;
-    }
-  }
-
-  .conflict-col {
-    flex: 0 1 auto;
-
-    .checkbox {
-      margin-top: 5px;
-    }
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
   }
 }
 
-#listView {
-  $header-size: 20px;
-
+/* the table of medio in the middle of the window */
+.media-list {
   flex: 1 1 auto;
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: column nowrap;
   overflow: hidden;
-  padding: 0 10px 10px 10px;
+  max-width: 100%;
+  margin: 0;
 
-  .source-col {
-    display: flex;
-    flex-flow: column nowrap;
-    padding: $header-size 5px 0 0;
-
-    button {
-      margin-bottom: 5px;
-    }
-  }
-
-  .media-col {
+  .form-group {
     flex: 1 1 auto;
     display: flex;
     flex-flow: column nowrap;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0;
 
-    ul {
-      flex: 0 1 auto;
-      display: flex;
+    tr {
+      cursor: pointer;
+    }
 
-      &.list-head {
-        flex: 0 1 auto;
-        display: flex;
-        flex-flow: row nowrap;
-        margin-right: 18px;
-        font-weight: bold;
+
+
+    .media-checked {
+      &:nth-child(odd) {
+        background-color: lighten(#5cb85c, 33%);
       }
-
-      &.list-body {
-        flex: 1 1 auto;
-        display: flex;
-        flex-flow: column nowrap;
-        overflow-y: scroll;
-        background: #fff;
-        border: 1px solid $input-border;
-        border-radius: $border-radius-base;
-
-        li {
-          flex: 0 1 auto;
-          display: flex;
-          flex-flow: row nowrap;
-          justify-content: flex-start;
-          border-bottom: 1px solid $input-border;
-          padding: 2px 0;
-          cursor: pointer;
-        }
-
-        .checkbox {
-          margin: 0;
-        }
-
-        .match {
-          background-color: lighten($brand-success, 33%);
-        }
-      }
-
-      .col {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        padding-left: 5px;
-      }
-
-      .url-col {
-        width: 80%;
-        max-width: 80%;
-      }
-
-      .type-col {
-        width: 10%;
-        max-width: 10%;
-      }
-
-      .mask-col {
-        width: 10%;
-        max-width: 10%;
+      &:nth-child(even) {
+        background-color: lighten(#5cb85c, 25%);
       }
     }
+
+    .media-item {
+      width: auto;
+      vertical-align: top;
+      word-break: break-all;
+      padding: 5px 0 5px 5px;
+      overflow: hidden;
+
+      url-with-filename {
+        font-size: 12px;
+        font-family: monospace;
+        color: $gray-600;
+        word-break: break-all;
+
+        span {
+          color: #000;
+          text-decoration: underline;
+        }
+      }
+
+      .badges {
+        line-height: 0;
+
+        & > .badge {
+          white-space: normal;
+
+          &:not(:last-child) {
+            margin-right: 2px;
+            margin-bottom: 2px;
+          }
+        }
+      }
+
+      .metadata {
+        font-size: 0.6rem;
+        color: $gray-900;
+      }
+    }
+
+    .media-thumb {
+      width: 1%;
+      text-align: right;
+      vertical-align: top;
+      padding-right: 5px;
+
+      img, video {
+        max-width: 64px;
+        max-height: 64px;
+      }
+
+      video {
+        display: block;
+      }
+    }
+
+  }
+}
+
+/* source controls at the bottom of the window */
+.source-controls > .col {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+
+  .source-select {
+    flex: 0 1 auto;
+    margin-right: 5px;
+  }
+
+  .quick-search {
+    flex: 0 1 auto;
+    max-width: 240px;
+  }
+
+  & > div:last-child {
+    flex: 1 1 auto;
+    text-align: right;
+    margin-left: 5px;
   }
 }

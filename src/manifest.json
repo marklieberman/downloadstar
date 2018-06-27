@@ -3,6 +3,12 @@
   "manifest_version": 2,
   "name": "Download Star",
   "version": "1.0.2",
+  "applications": {
+    "gecko": {
+      "id": "{8cc0b007-e40b-46e8-9e50-e3bf021c94ab}",
+      "strict_min_version": "60.0"
+    }
+  },
 
   "description": "Download all items in a webpage that match a pattern",
 
@@ -12,13 +18,14 @@
   },
 
   "permissions": [
+    "<all_urls>",
     "activeTab",
     "downloads",
     "storage"
   ],
 
   "browser_action": {
-    "browser_style": true,
+    "browser_style": false,
     "default_icon": "icons/icon.svg",
     "default_title": "Download Star",
     "default_popup": "popup/popup.html"
@@ -31,9 +38,9 @@
   },
 
   "options_ui": {
-    "browser_style": true,
+    "browser_style": false,
     "page": "options/options.html",
-    "open_in_tab": false
+    "open_in_tab": true
   }
 
 }

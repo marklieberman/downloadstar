@@ -1,4 +1,5 @@
 .DS_Store
 node_modules/*
 dist/*
-**/popup.css
+src/common/fa-webfonts
+**/src/**/*.css

@@ -1,0 +1,40 @@
+<!doctype html>
+<html ng-app="dsPopupApp" ng-strict-di>
+  <head>
+    <meta charset="utf-8">
+    <title>Download Star History</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="history.css">
+  </head>
+
+  <body ng-controller="HistoryCtrl as vm">
+    <form name="dsPopupForm">
+      <div class="form-group">
+        <button class="btn btn-secondary" type="button"
+                ng-click="vm.clearHistory()">
+          Clear History
+        </button>
+      </div>
+
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>URL</th>
+            <th>Path</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="entry in vm.history">
+            <td>{{entry.url}}</td>
+            <td>{{entry.path}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+
+    <!-- library components -->
+    <script src="../common/lib/angular.min.js"></script>
+    <script src="history.js"></script>
+
+  </body>
+</html>
