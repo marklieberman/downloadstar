@@ -15,9 +15,9 @@ app.controller('OptionsCtrl', [
 
     // ----- Controller init -----
     vm.settings = {
-      maxConcurrentDownloads: 4,
-      keepHistory: 'always',
-      maxHistory: 1000
+      maxConcurrentDownloads: 4, // Maximum concurrent downloads.
+      keepHistory: 'always',     // Store download history?
+      maxHistory: 1000           // Maximum number of history entries.
     };
 
     // Load settings from storage.

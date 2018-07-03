@@ -7,7 +7,7 @@ const state = {
 
 const settings = {
   maxConcurrentDownloads: 4, // Maximum concurrent downloads.
-  keepHistory: 'never',      // Store download history?
+  keepHistory: 'always',     // Store download history?
   maxHistory: 1000           // Maximum number of history entries.
 };
 
