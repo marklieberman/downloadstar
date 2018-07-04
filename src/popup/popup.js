@@ -1,7 +1,9 @@
 /* global angular */
 'use strict';
 
-var app = angular.module('dsPopupApp', []);
+var app = angular.module('dsPopupApp', [
+  'i18n'
+]);
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Model for filters to match media types by mime or extension.
@@ -1013,40 +1015,6 @@ app.controller('PopupCtrl', [
         window.close();
       });
     };
-
-    function updateLastIndex() {
-      // Update listIndex positions
-      const activeMediaList = $scope.getMediaListChecked().length ? $scope.getMediaListChecked() : $scope.getMediaList();
-      $scope.listIndex = {
-        first: activeMediaList[0].index,
-        last: activeMediaList[activeMediaList.length - 1].index,
-      }
-    }
-
-    function toggleItemCheck(event, item) {
-      if (event.shiftKey) {
-        let { first, last } = { ...$scope.listIndex };
-
-        if (item.index > last) {
-          first = last + 1;
-          last = item.index;
-        } else if (item.index <= first || item.index >= first) {
-          first = item.index;
-        }
-
-        multiSelectShiftClick(first, last);
-      } else {
-        item.checked = !item.checked;
-      }
-      updateLastIndex();
-    }
-
-    function multiSelectShiftClick(from, to) {
-      for (let i = from; i <= to; i++) {
-        const item = $scope.getMediaList()[i];
-        item.checked = !item.checked;
-      }
-    }
 
   }]);
 

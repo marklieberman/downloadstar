@@ -1,12 +1,17 @@
-var gulp   = require('gulp'),
-    jshint = require('gulp-jshint'),
-    sass   = require('gulp-sass'),
-    zip    = require('gulp-zip');
+var gulp     = require('gulp'),
+    jshint   = require('gulp-jshint'),
+    jsonlint = require("gulp-jsonlint"),
+    sass     = require('gulp-sass'),
+    zip      = require('gulp-zip');
 
 var sources = {
   js: [
     'src/**/*.js',
     '!**/lib/**'
+  ],
+  json: [
+    'src/manifest.json',
+    'src/_locales/**/*.json'
   ],
   sass: [
     'src/popup/popup.scss',
@@ -25,10 +30,11 @@ var sources = {
   ]
 };
 
-gulp.task('default', [ 'copy', 'lint', 'sass', 'watch' ]);
+gulp.task('default', [ 'copy', 'lint', 'jsonlint', 'sass', 'watch' ]);
 
 gulp.task('watch', function () {
   gulp.watch(sources.js, [ 'lint' ]);
+  gulp.watch(sources.json, [ 'jsonlint' ]);
   gulp.watch(sources.sass, [ 'sass' ]);
   gulp.watch(sources.watch.sass, [ 'sass' ]);
 });
@@ -45,6 +51,12 @@ gulp.task('lint', function () {
   return gulp.src(sources.js)
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'));
+});
+
+gulp.task('jsonlint', function () {
+  return gulp.src(sources.json)
+    .pipe(jsonlint())
+    .pipe(jsonlint.reporter());
 });
 
 gulp.task('copy', function () {

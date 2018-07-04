@@ -19,6 +19,7 @@
 
     "NodeFilter": true,
 
+    "angular": true,
     "moment": true
   }
 }

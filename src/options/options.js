@@ -1,7 +1,9 @@
 /* global angular */
 'use strict';
 
-var app = angular.module('dsPopupApp', []);
+var app = angular.module('dsPopupApp', [
+  'i18n'
+]);
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Main controller for the options page.

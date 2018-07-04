@@ -1,0 +1,9 @@
+{
+  "manifestDescription": {
+    "description": "The description of this addon in manifest.json",
+    "message": "Download all items in a webpage that match a pattern"
+  },
+  "downloadPathPrepend": {
+    "message": "Download/"
+  }
+}

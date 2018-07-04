@@ -15,9 +15,8 @@
         <div class="form-group col">
           <div class="input-group input-group-sm">
             <div class="input-group-prepend">
-              <span class="input-group-text">
-                Downloads/
-              </span>
+              <span class="input-group-text"
+                    i18n="'downloadPathPrepend'"></span>
             </div>
             <input class="form-control download-location" type="text" name="downloadPath"
                    ng-model="vm.controls.downloadPath"></input>
@@ -402,6 +401,7 @@
     <!-- library components -->
     <script src="../common/lib/angular.min.js"></script>
     <script src="../common/lib/moment.min.js"></script>
+    <script src="../common/i18n.js"></script>
     <script src="popup.js"></script>
 
   </body>
