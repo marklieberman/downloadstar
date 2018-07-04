@@ -613,7 +613,7 @@ app.factory('NamingMask', [
         let variableName = tokens.shift();
         let variableFunc = VARIABLES[variableName];
         if (!variableFunc) {
-          throw variableName + ' is not a valid variable';
+          throw browser.i18n.getMessage('errorNamingMaskBadVariable', variableName);
         }
 
         // Remaining tokens are filters.
@@ -642,7 +642,7 @@ app.factory('NamingMask', [
         let filterName = tokens.shift();
         let filterFunc = FILTERS[filterName];
         if (!filterFunc) {
-          throw filterName + ' is not a valid filter';
+          throw browser.i18n.getMessage('errorNamingMaskBadFilter', filterName);
         }
 
         // Remaining tokens are arguments.

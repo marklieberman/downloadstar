@@ -7,21 +7,53 @@ i18nModule.directive('i18n', [
     return {
       restrict: 'EA',
       scope: {
-        i18n: '='
+        i18n: '<'
       },
       link: (scope, element, attrs) => {
-        // Only treat the string as HTML if enabled by attribute.
-        let setter = angular.isDefined(attrs.i18nHtml) ? 'innerHTML' : 'innerText';
-
-        scope.$watch('i18n', args => {
-          if (angular.isString(args)) {
-            element[0][setter] = browser.i18n.getMessage(args);
-          } else
-          if (angular.isArray(args)) {
-            let message = args.shift();
-            element[0][setter] = browser.i18n.getMessage(message, args);
+        attrs.$observe('i18n', function (attributeValue) {
+          let value = scope.$eval(attributeValue);
+          if (angular.isString(value)) {
+            element[0].innerText = browser.i18n.getMessage(value);
           }
         });
+      }
+    };
+}]);
+
+i18nModule.directive('i18nTitle', [
+  function () {
+    return {
+      restrict: 'A',
+      scope: {
+        i18nTitle: '<'
+      },
+      link: (scope, element, attrs) => {
+        attrs.$observe('i18nTitle', function (attributeValue) {
+          let value = scope.$eval(attributeValue);
+          if (angular.isString(value)) {
+            element[0].setAttribute('title', browser.i18n.getMessage(value));
+          }
+        });
+
+      }
+    };
+}]);
+
+i18nModule.directive('i18nPlaceholder', [
+  function () {
+    return {
+      restrict: 'A',
+      scope: {
+        i18nTitle: '<'
+      },
+      link: (scope, element, attrs) => {
+        attrs.$observe('i18nPlaceholder', function (attributeValue) {
+          let value = scope.$eval(attributeValue);
+          if (angular.isString(value)) {
+            element[0].setAttribute('placeholder', browser.i18n.getMessage(value));
+          }
+        });
+
       }
     };
 }]);

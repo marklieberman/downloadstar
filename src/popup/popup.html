@@ -25,7 +25,7 @@
               <button class="btn btn-dark begin-download"
                       ng-click="vm.downloadMediaItems()"
                       ng-disabled="!vm.canProceedToDownload()"
-                      title="Begin download">
+                      i18n-title="'beginDownloadButtonTitle'">
                 <i class="fa fa-download"></i>
                 ({{vm.countCheckedMediaItems()}})
               </button>
@@ -35,15 +35,14 @@
               <button class="btn btn-outline-secondary toggle-options" type="button"
                       ng-class="{ 'active': vm.controls.showOptions }"
                       ng-click="vm.controls.showOptions = !vm.controls.showOptions"
-                      title="Toggle settings">
+                      i18n-title="'toggleOptionsButtonTitle'">
                 <i class="fa fa-cog"></i>
               </button>
             </div>
           </div>
           <small class="text-danger"
-                 ng-show="vm.isDownloadPathAbsolute()">
-            This must be relative to Firefox's download folder.
-          </small>
+                 ng-show="vm.isDownloadPathAbsolute()"
+                 i18n="'errorDownloadPathMustBeRelative'"></small>
         </div>
       </div>
 
@@ -58,7 +57,7 @@
                  ng-class="{ 'active': vm.controls.tab === 'filters' }"
                  ng-click="vm.controls.tab = 'filters'">
                 <i class="fa fa-filter"></i>
-                Filters
+                <span i18n="'tabFilters'"></span>
               </a>
             </li>
             <li class="nav-item">
@@ -66,7 +65,7 @@
                  ng-class="{ 'active': vm.controls.tab === 'naming' }"
                  ng-click="vm.controls.tab = 'naming'">
                 <i class="fa fa-file-signature"></i>
-                Naming
+                <span i18n="'tabNaming'"></span>
               </a>
             </li>
             <li class="nav-item">
@@ -74,7 +73,7 @@
                  ng-class="{ 'active': vm.controls.tab === 'saving' }"
                  ng-click="vm.controls.tab = 'saving'">
                 <i class="fa fa-save"></i>
-                Saving
+                <span i18n="'tabSaving'"></span>
               </a>
             </li>
           </ul>
@@ -83,62 +82,56 @@
                ng-show="vm.controls.tab === 'filters'">
             <!-- built-in filters -->
             <div class="built-in-filters">
-              <label>Built-in Filters</label>
+              <label i18n="'builtInFilters'"></label>
               <div>
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="checkbox" id="useImageFilter"
                          ng-model="vm.filters.image"
                          ng-change="vm.evaluateFilters()"></input>
-                  <label class="form-check-label" for="useImageFilter">
-                    Images
-                  </label>
+                  <label class="form-check-label" for="useImageFilter"
+                        i18n="'imageFilter'"></label>
                 </div>
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="checkbox" id="useVideoFilter"
                          ng-model="vm.filters.video"
                          ng-change="vm.evaluateFilters()"></input>
-                  <label class="form-check-label" for="useVideoFilter">
-                    Video
-                  </label>
+                  <label class="form-check-label" for="useVideoFilter"
+                         i18n="'videoFilter'"></label>
                 </div>
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="checkbox" id="useAudioFilter"
                          ng-model="vm.filters.audio"
                          ng-change="vm.evaluateFilters()"></input>
-                  <label class="form-check-label" for="useAudioFilter">
-                    Audio
-                  </label>
+                  <label class="form-check-label" for="useAudioFilter"
+                         i18n="'audioFilter'"></label>
                 </div>
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="checkbox" id="useArchiveFilter"
                          ng-model="vm.filters.archive"
                          ng-change="vm.evaluateFilters()"></input>
-                  <label class="form-check-label" for="useArchiveFilter">
-                    Archive
-                  </label>
+                  <label class="form-check-label" for="useArchiveFilter"
+                         i18n="'archiveFilter'"></label>
                 </div>
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="checkbox" id="useDocumentFilter"
                          ng-model="vm.filters.document"
                          ng-change="vm.evaluateFilters()"></input>
-                  <label class="form-check-label" for="useDocumentFilter">
-                    Document
-                  </label>
+                  <label class="form-check-label" for="useDocumentFilter"
+                         i18n="'documentFilter'"></label>
                 </div>
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="checkbox" id="useExeFilter"
                          ng-model="vm.filters.executable"
                          ng-change="vm.evaluateFilters()"></input>
-                  <label class="form-check-label" for="useExeFilter">
-                    Executable
-                  </label>
+                  <label class="form-check-label" for="useExeFilter"
+                         i18n="'executableFilter'"></label>
                 </div>
               </div>
             </div>
 
             <!-- fast filter -->
             <div class="fast-filter">
-              <label>Fast Filter</label>
+              <label i18n="'fastFilter'"></label>
               <div class="input-group input-group-sm">
                 <input class="form-control form-control-sm" type="text" name="fastFilter"
                        ng-class="{ 'is-invalid': vm.fastFilterError }"
@@ -150,21 +143,20 @@
                   <button class="btn btn-outline-secondary toggle-regex" type="button"
                           ng-class="{ 'active': vm.controls.fastFilterRegex }"
                           ng-click="vm.toggleFastFilterRegex()"
-                          title="Toggle regular expression mode">
+                          i18n-title="'fastFilterRegexTitle'">
                     (.*)
                   </button>
                   <!-- clear fast filter button -->
                   <button class="btn btn-outline-secondary clear-fast-filter" type="button"
                           ng-click="vm.clearFastFilter()"
-                          title="Clear fast filer">
+                          i18n-title="'fastFilterClearTitle'">
                     <i class="fa fa-eraser"></i>
                   </button>
                 </div>
               </div>
               <small class="text-danger"
-                      ng-show="vm.fastFilterError">
-                Not a valid regular expression
-              </small>
+                      ng-show="vm.fastFilterError"
+                      i18n="'errorFastFilterNotRegex'"></small>
             </div>
           </div>
           <!-- mask naming tab -->
@@ -172,7 +164,11 @@
                ng-show="vm.controls.tab === 'naming'">
             <!-- naming mask -->
             <div class="naming-mask">
-              <label>Naming Mask (<a href="https://github.com/marklieberman/downloadstar/wiki/Naming-Mask-Expression-Guide" target="_blank">Guide</a>)</label>
+              <label>
+                <span i18n="'namingMask'"></span>
+                (<a href="https://github.com/marklieberman/downloadstar/wiki/Naming-Mask-Expression-Guide" target="_blank"
+                     i18n="'namingMaskGuide'"></a>)
+              </label>
               <div class="input-group input-group-sm">
                 <input class="form-control" type="text" name="namingMask"
                        ng-class="{ 'is-invalid': vm.namingMaskError }"
@@ -184,13 +180,13 @@
                   <button class="btn btn-outline-secondary" type="button"
                           ng-class="{ 'active': vm.controls.showMetadata }"
                           ng-click="vm.controls.showMetadata = !vm.controls.showMetadata"
-                          title="Show collected metadata">
+                          i18n-title="'showMetadataTitle'">
                     <i class="fa fa-info-circle"></i>
                   </button>
                   <!-- clear naming mask button -->
                   <button class="btn btn-outline-secondary" type="button"
                           ng-click="vm.clearNamingMask()"
-                          title="Clear naming mask">
+                          i18n-title="'clearNamingMaskTitle'">
                     <i class="fa fa-eraser"></i>
                   </button>
                 </div>
@@ -206,12 +202,15 @@
                ng-show="vm.controls.tab === 'saving'">
             <!-- conflict action -->
             <div>
-              <label>On Conflict</label>
+              <label i18n="'onConflict'"></label>
               <select class="form-control form-control-sm"
                       ng-model="vm.controls.conflictAction">
-                <option value="skip" selected>Skip</option>
-                <option value="uniquify">Rename</option>
-                <option value="overwrite">Overwrite</option>
+                <option value="skip" selected
+                        i18n="'conflictActionSkip'"></option>
+                <option value="uniquify"
+                        i18n="'conflictActionRename'"></option>
+                <option value="overwrite"
+                        i18n="'conflictActionOverwrite'"></option>
               </select>
             </div>
 
@@ -220,9 +219,8 @@
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="checkbox" id="eraseHistory"
                       ng-model="vm.controls.eraseHistory"></input>
-                <label class="form-check-label" for="eraseHistory">
-                  Remove files from native manager after download
-                </label>
+                <label class="form-check-label" for="eraseHistory"
+                       i18n="'removeAfterDownload'"></label>
               </div>
             </div>
           </div>
@@ -242,34 +240,30 @@
           <div class="empty-table-help"
                ng-if="!vm.scraping && !vm.visibleMedia.length">
             <!-- no media could be scraped -->
-            <span ng-show="!vm.media.length">
-              Failed to find any media.
-            </span>
+            <span ng-show="!vm.media.length"
+                  i18n="'failedToFindMedia'"></span>
 
             <!-- all media is hidden -->
             <span ng-show="vm.media.length">
-              Nothing to display.
+              <span i18n="'nothingToDisplay'"></span>
               <!-- no sources are enabled -->
               <a href="#"
                  ng-hide="vm.isAnySourceEnabled()"
                  ng-click="
                    vm.controls.sources.embed = true;
                    vm.controls.sources.link = true
-                 ">
-                Try enabling some media sources.
-              </a>
+                 "
+                 i18n="'tryEnableMediaSources'"></a>
               <!-- no items are checked and checked-only is enabled -->
               <a href="#"
                  ng-show="vm.controls.checkedOnly && !vm.countCheckedMediaItems()"
-                 ng-click="vm.controls.checkedOnly = false">
-                Try disabling show only checked items.
-              </a>
+                 ng-click="vm.controls.checkedOnly = false"
+                 i18n="'tryDisableShowOnlyChecked'"></a>
               <!-- quick search is returning no results -->
               <a href="#"
                  ng-show="vm.search"
-                 ng-click="vm.search = ''">
-                Try clearing quick search.
-              </a>
+                 ng-click="vm.search = ''"
+                 i18n="'tryClearQuickSearch'"></a>
             </span>
           </div>
 
@@ -349,19 +343,19 @@
             <button class="btn btn-outline-secondary btn-sm source-link" type="button"
                     ng-class="{ 'active': vm.controls.sources.link }"
                     ng-click="vm.controls.sources.link = !vm.controls.sources.link"
-                    title="Show media from links">
+                    i18n-title="'showMediaFromLinksTitle'">
               <i class="fa fa-link"></i>
             </button>
             <button class="btn btn-outline-secondary btn-sm source-embed" type="button"
                     ng-class="{ 'active': vm.controls.sources.embed }"
                     ng-click="vm.controls.sources.embed = !vm.controls.sources.embed"
-                    title="Show embedded media">
+                    i18n-title="'showMediaFromEmbedsTitle'">
               <i class="fa fa-image"></i>
             </button>
             <button class="btn btn-outline-secondary btn-sm source-text" type="button"
                     ng-class="{ 'active': vm.controls.sources.text }"
                     ng-click="vm.controls.sources.text = !vm.controls.sources.text"
-                    title="Show media from plain-text">
+                    i18n-title="'showMediaFromTextTitle'">
               <i class="fa fa-font"></i>
             </button>
           </div>
@@ -370,7 +364,7 @@
             <button class="btn btn-outline-secondary btn-sm checked-only" type="button"
                     ng-class="{ 'active': vm.controls.checkedOnly }"
                     ng-click="vm.controls.checkedOnly = !vm.controls.checkedOnly"
-                    title="Only show checked items">
+                    i18n-title="'onlyCheckedItemsTitle'">
               <i class="fa fa-clipboard-check"></i>
             </button>
           </div>
@@ -384,13 +378,13 @@
             <input class="form-control" type="text"
                    ng-model="vm.search"
                    ng-model-options="{ debounce: 200 }"
-                   placeholder="Quick search"></input>
+                   i18n-placeholder="'quickSearchPlaceholder'"></input>
           </div>
           <!-- scrape all tabs -->
           <div>
             <button class="btn btn-outline-secondary btn-sm scrape-all-tabs" type="button"
                     ng-click="vm.scrapeAllTabs(true)"
-                    title="Scrape all tabs in current window">
+                    i18n-title="'scrapeAllTabsTitle'">
               <i class="fa fa-clone"></i>
             </button>
           </div>

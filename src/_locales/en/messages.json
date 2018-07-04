@@ -5,5 +5,161 @@
   },
   "downloadPathPrepend": {
     "message": "Download/"
+  },
+  "errorDownloadPathMustBeRelative": {
+    "message": "This must be relative to Firefox's download folder."
+  },
+  "beginDownloadButtonTitle": {
+    "message": "Begin download"
+  },
+  "toggleOptionsButtonTitle": {
+    "message": "Toggle options"
+  },
+  "tabFilters": {
+    "message": "Filters"
+  },
+  "tabNaming": {
+    "message": "Naming"
+  },
+  "tabSaving": {
+    "message": "Saving"
+  },
+  "builtInFilters": {
+    "message": "Built-in Filters"
+  },
+  "imageFilter": {
+    "message": "Images"
+  },
+  "videoFilter": {
+    "message": "Video"
+  },
+  "audioFilter": {
+    "message": "Audio"
+  },
+  "archiveFilter": {
+    "message": "Archive"
+  },
+  "documentFilter": {
+    "message": "Document"
+  },
+  "executableFilter": {
+    "message": "Executable"
+  },
+  "fastFilter": {
+    "message": "Fast Filter"
+  },
+  "fastFilterRegexTitle": {
+    "message": "Toggle regular expression mode"
+  },
+  "fastFilterClearTitle": {
+    "message": "Clear fast filer"
+  },
+  "errorFastFilterNotRegex": {
+    "message": "Not a valid regular expression."
+  },
+  "namingMask": {
+    "message": "Naming Mask"
+  },
+  "namingMaskGuide": {
+    "message": "Guide"
+  },
+  "showMetadataTitle": {
+    "message": "Show collected metadata"
+  },
+  "clearNamingMaskTitle": {
+    "message": "Clear naming mask"
+  },
+  "errorNamingMaskBadVariable": {
+    "message": "\"$NAME$\" is not a valid variable.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "invalidvar"
+      }
+    }
+  },
+  "errorNamingMaskBadFilter": {
+    "message": "\"$NAME$\" is not a valid filter.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "invalidfilter"
+      }
+    }
+  },
+  "onConflict": {
+    "message": "On Conflict"
+  },
+  "conflictActionSkip": {
+    "message": "Skip"
+  },
+  "conflictActionRename": {
+    "message": "Rename"
+  },
+  "conflictActionOverwrite": {
+    "message": "Overwrite"
+  },
+  "removeAfterDownload": {
+    "message": "Remove files from native manager after download"
+  },
+  "failedToFindMedia": {
+    "message": "Failed to find any media."
+  },
+  "nothingToDisplay": {
+    "message": "Nothing to display."
+  },
+  "tryEnableMediaSources": {
+    "message": "Try enabling some media sources."
+  },
+  "tryDisableShowOnlyChecked": {
+    "message": "Try disabling show only checked items."
+  },
+  "tryClearQuickSearch": {
+    "message": "Try clearing quick search."
+  },
+  "showMediaFromLinksTitle": {
+    "message": "Show media from links"
+  },
+  "showMediaFromEmbedsTitle": {
+    "message": "Show embedded media"
+  },
+  "showMediaFromTextTitle": {
+    "message": "Show media from plain-text"
+  },
+  "onlyCheckedItemsTitle": {
+    "message": "Show only checked items"
+  },
+  "quickSearchPlaceholder": {
+    "message": "Quick search"
+  },
+  "scrapeAllTabsTitle": {
+    "message": "Scrape all tabs in the current window"
+  },
+  "optionsHeader": {
+    "message": "Download Star Options"
+  },
+  "maxConcurrentDownloads": {
+    "message": "Concurrent Download Limit"
+  },
+  "maxConcurrentDownloadsHelp": {
+    "message": "The maximum number of concurrent downloads."
+  },
+  "keepHistory": {
+    "message": "Keep Download History"
+  },
+  "keepHistoryHelp": {
+    "message": "If you move files after download but still want to be able use \"on conflict: skip\", the addon can remember previous downloads and filenames. If you disable history, downloads can only be skipped if they already exist in the download folder."
+  },
+  "keepHistoryAlways": {
+    "message": "Always"
+  },
+  "keepHistoryNever": {
+    "message": "Never"
+  },
+  "maxHistory": {
+    "message": "Maximum History Entries"
+  },
+  "maxHistoryHelp": {
+    "message": "The maximum number of downloads to remember."
   }
 }

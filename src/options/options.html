@@ -9,45 +9,42 @@
 
   <body ng-controller="OptionsCtrl as vm">
     <div class="container">
-      <h1>Download Star Options</h1>
+      <h1 i18n="'optionsHeader'"></h1>
 
       <form id="options-form">
         <!-- max concurrent downloads -->
         <div class="form-group">
-          <label>Maximum Concurrent Downloads</label>
+          <label i18n="'maxConcurrentDownloads'"></label>
           <input class="form-control" type="number"
                  ng-model="vm.settings.maxConcurrentDownloads"
                  min="1" step="1" max="10" value="10"></input>
-          <small class="form-text text-muted">
-            The maximum number of concurrent downloads.
-          </small>
+          <small class="form-text text-muted"
+                 i18n="'maxConcurrentDownloadsHelp'"></small>
         </div>
 
         <!-- keep download history -->
         <div class="form-group">
-          <label>Keep Download History</label>
+          <label i18n="'keepHistory'"></label>
           <select class="form-control"
                   ng-model="vm.settings.keepHistory">
-            <option value="always">Always</option>
-            <option value="never">Never</option>
+            <option value="always"
+                    i18n="'keepHistoryAlways'"></option>
+            <option value="never"
+                    i18n="'keepHistoryNever'"></option>
           </select>
-          <small class="form-text text-muted">
-            If you move files after download but still want to be able use "on conflict: skip", the addon can remember
-            previous downloads and filenames. If you disable history, downloads can only be skipped if they already
-            exist in the download folder.
-          </small>
+          <small class="form-text text-muted"
+                 i18n="'keepHistoryHelp'"></small>
         </div>
 
         <!-- keep download history -->
         <div class="form-group">
-          <label>Maximum History Entries</label>
+          <label i18n="'maxHistory'"></label>
           <input class="form-control" type="number"
                  ng-model="vm.settings.maxHistory"
                  ng-disabled="vm.settings.keepHistory === 'never'"
                  min="1" step="1" max="10000" value="1000"></input>
-          <small class="form-text text-muted">
-            The maximum number of downloads to remember indefinitely.
-          </small>
+          <small class="form-text text-muted"
+                 i18n="'maxHistoryHelp'"></small>
         </div>
       </form>
     </div>
