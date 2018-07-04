@@ -272,11 +272,11 @@
                  ng-hide="vm.scraping">
             <tbody>
               <tr ng-class="{
-                    'first-row': $first,
-                    'media-checked':item.checked
+                    'media-checked':item.checked,
+                    'last-clicked': item === vm.lastClickedItem
                   }"
                   ng-repeat="item in vm.visibleMedia = (vm.media | filter:vm.filterMediaSource | filter:vm.filterQuickSearch())"
-                  ng-click="vm.toggleMediaItemChecked(item)"
+                  ng-click="vm.toggleMediaItemChecked(item, $index, $event)"
                   title="{{::item.url}}">
                 <!-- media item column -->
                 <td class="media-item">

@@ -688,10 +688,10 @@ app.controller('PopupCtrl', [
     var vm = this;
 
     // ----- Controller init -----
+    vm.scraping = true;
     vm.media = [];
     vm.mediaFilters = MediaFilters;
-    vm.scraping = true;
-    vm.progress = [0, 0];
+    vm.lastClickedItem = null;
     vm.controls = {
       downloadPath: 'DownloadStar',
       showOptions: true,
@@ -958,8 +958,32 @@ app.controller('PopupCtrl', [
     /**
      * Toggle the checked status of a MediaItem.
      */
-    vm.toggleMediaItemChecked = (mediaItem) => {
+    vm.toggleMediaItemChecked = (mediaItem, index, event) => {
+      // Toggle the checked state of the clicked-upon item.
       mediaItem.checked = !mediaItem.checked;
+
+      // Apply the same state to all items in a range when shift is pressed.
+      if (event.shiftKey) {
+        // Ensure that the last clicked item is still visible.
+        let startIndex = vm.visibleMedia.indexOf(vm.lastClickedItem);
+        if (!!~startIndex) {
+          if (startIndex < index) {
+            for (let i = startIndex; i < index; i++) {
+              vm.visibleMedia[i].checked = mediaItem.checked;
+            }
+          } else {
+            for (let i = startIndex; i > index; i--) {
+              vm.visibleMedia[i].checked = mediaItem.checked;
+            }
+          }
+        }
+
+        // Clear the selection.
+        window.getSelection().removeAllRanges();
+      }
+
+      // Record the last clicked item in the table.
+      vm.lastClickedItem = mediaItem;
 
       // Update the naming mask for checked items.
       // This should refresh variables like ${inum}.

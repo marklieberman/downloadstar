@@ -106,14 +106,42 @@ form {
       cursor: pointer;
     }
 
-
+    @mixin select-gradient($rowColor, $selectColor) {
+      background: linear-gradient(125deg, $rowColor 0%, $selectColor 5%);
+    }
 
     .media-checked {
-      &:nth-child(odd) {
-        background-color: lighten(#5cb85c, 33%);
+      $checkedEvenColor: lighten(#5cb85c, 25%);
+      $checkedOddColor: lighten(#5cb85c, 33%);
+      $lastClickedColor: darken(#5cb85c, 5%);
+
+      &:not(.last-clicked) {
+        &:nth-child(odd) {
+          background: $checkedOddColor;
+        }
+        &:nth-child(even) {
+          background: $checkedEvenColor;
+        }
       }
-      &:nth-child(even) {
-        background-color: lighten(#5cb85c, 25%);
+
+      &.last-clicked {
+        &:nth-child(odd) {
+          @include select-gradient($lastClickedColor, $checkedOddColor);
+        }
+        &:nth-child(even) {
+          @include select-gradient($lastClickedColor, $checkedEvenColor);
+        }
+      }
+    }
+
+    .last-clicked {
+      $lastClickedColor: #999;
+
+      &:nth-of-type(odd) {
+        @include select-gradient($lastClickedColor, $table-accent-bg);
+      }
+      &:nth-of-type(even) {
+        @include select-gradient($lastClickedColor, transparent);
       }
     }
 
