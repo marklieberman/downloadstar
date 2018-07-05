@@ -53,7 +53,7 @@
         <div class="form-group col">
           <ul class="nav nav-tabs nav-justified">
             <li class="nav-item">
-              <a class="nav-link" href="#"
+              <a class="nav-link" href=""
                  ng-class="{ 'active': vm.controls.tab === 'filters' }"
                  ng-click="vm.controls.tab = 'filters'">
                 <i class="fa fa-filter"></i>
@@ -61,7 +61,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#"
+              <a class="nav-link" href=""
                  ng-class="{ 'active': vm.controls.tab === 'naming' }"
                  ng-click="vm.controls.tab = 'naming'">
                 <i class="fa fa-file-signature"></i>
@@ -69,7 +69,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#"
+              <a class="nav-link" href=""
                  ng-class="{ 'active': vm.controls.tab === 'saving' }"
                  ng-click="vm.controls.tab = 'saving'">
                 <i class="fa fa-save"></i>
@@ -247,7 +247,7 @@
             <span ng-show="vm.media.length">
               <span i18n="'nothingToDisplay'"></span>
               <!-- no sources are enabled -->
-              <a href="#"
+              <a href=""
                  ng-hide="vm.isAnySourceEnabled()"
                  ng-click="
                    vm.controls.sources.embed = true;
@@ -255,12 +255,12 @@
                  "
                  i18n="'tryEnableMediaSources'"></a>
               <!-- no items are checked and checked-only is enabled -->
-              <a href="#"
+              <a href=""
                  ng-show="vm.controls.checkedOnly && !vm.countCheckedMediaItems()"
                  ng-click="vm.controls.checkedOnly = false"
                  i18n="'tryDisableShowOnlyChecked'"></a>
               <!-- quick search is returning no results -->
-              <a href="#"
+              <a href=""
                  ng-show="vm.search"
                  ng-click="vm.search = ''"
                  i18n="'tryClearQuickSearch'"></a>
