@@ -1076,7 +1076,7 @@ app.directive('urlWithFilename', ['$timeout', ($timeout) => {
       var pendingLayout = false;
 
       // Assumed width of the monospace font.
-      const fontWidth = 7.5;
+      const fontWidth = 7.8;
 
       // Get the value of the bound MediaItem.
       let mediaItem = scope.$eval(attrs.mediaItem);
@@ -1107,7 +1107,7 @@ app.directive('urlWithFilename', ['$timeout', ($timeout) => {
        */
       function layoutFilename () {
         // Choose a max length based on the element width.
-        let maxLength = Math.floor(((window.innerWidth - 80) / fontWidth) - 2);
+        let maxLength = Math.floor(((window.innerWidth - 90) / fontWidth) - 2);
         if (mediaItem.isDataUrl) {
           // Data URL has no filename on the URL.
           shortenNoFilename(mediaItem, maxLength);
