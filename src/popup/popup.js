@@ -547,6 +547,11 @@ app.factory('NamingMask', [
       dateFormat: function (input, format = 'YYYY-MM-DDD') {
         let value = moment(input);
         return value.isValid() ? value.format(format) : input;
+      },
+      // Split input by separator and access nth element
+      split: (input, separator, index) => {
+        let elem = input.split(separator)[index]
+        return elem ? elem : input
       }
     };
 
