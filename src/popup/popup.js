@@ -566,8 +566,9 @@ app.factory('NamingMask', [
       // Allow to get specific params of search
       getParam: (input, param) =>  {
         if (!(input instanceof URLSearchParams)) return 'BADARG';
-        return input.has(param) ? input.get(param) : ''
+        return input.has(param) ? input.get(param) : input
       }
+
     };
 
     /**
