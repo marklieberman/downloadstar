@@ -547,6 +547,9 @@ app.factory('NamingMask', [
       dateFormat: function (input, format = 'YYYY-MM-DDD') {
         let value = moment(input);
         return value.isValid() ? value.format(format) : input;
+      },
+      replace: (input = '', search = '', replace = '', flags = 'g') => {
+        return input.replace(new RegExp(search, flags), replace);
       }
     };
 
