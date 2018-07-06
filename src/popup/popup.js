@@ -610,7 +610,10 @@ app.factory('NamingMask', [
     NamingMask.prototype.compileVariable = function (variableDef) {
       let self = this;
       try {
-        let tokens = this.cleanSplit(variableDef, '|');
+        // Construct list of known filters
+        const whitelist = `${Object.keys(FILTERS).join('|')}`;
+        const separator = new RegExp(`\\|(?=${whitelist})`, 'g')
+        let tokens = this.cleanSplit(variableDef, separator);
 
         // First token must be a variable.
         let variableName = tokens.shift();
