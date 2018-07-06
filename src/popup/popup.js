@@ -514,7 +514,6 @@ app.factory('NamingMask', [
       port: (mediaItem) => mediaItem.urlProps.port || '',
       protocol: (mediaItem) => mediaItem.urlProps.protocol || '',
       search: (mediaItem) => mediaItem.urlProps.search || '',
-      searchParams: (mediaItem) => mediaItem.urlProps.searchParams || '',
       username: (mediaItem) => mediaItem.urlProps.username || '',
       // Dynamic variables
       // An auto-incrementing number.
