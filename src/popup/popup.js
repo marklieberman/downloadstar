@@ -570,7 +570,7 @@ app.factory('NamingMask', [
     };
 
     /**
-     * Split the input by a separater and remove empty tokens.
+     * Split the input by a separator and remove empty tokens.
      */
     NamingMask.prototype.cleanSplit = function (input, separator) {
       return input.split(separator)
