@@ -514,6 +514,7 @@ app.factory('NamingMask', [
       port: (mediaItem) => mediaItem.urlProps.port || '',
       protocol: (mediaItem) => mediaItem.urlProps.protocol || '',
       search: (mediaItem) => mediaItem.urlProps.search || '',
+      searchParams: (mediaItem) => mediaItem.urlProps.searchParams || {},
       username: (mediaItem) => mediaItem.urlProps.username || '',
       // Dynamic variables
       // An auto-incrementing number.
@@ -561,6 +562,11 @@ app.factory('NamingMask', [
       dateFormat: function (input, format = 'YYYY-MM-DDD') {
         let value = moment(input);
         return value.isValid() ? value.format(format) : input;
+      },
+      // Allow to get specific params of search
+      getParam: (input, param) =>  {
+        if (!(input instanceof URLSearchParams)) return 'BADARG';
+        return input.has(param) ? input.get(param) : ''
       }
     };
 
