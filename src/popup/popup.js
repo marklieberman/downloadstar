@@ -503,6 +503,7 @@ app.factory('NamingMask', [
       width: (mediaItem) => mediaItem.width || '',
       height: (mediaItem) => mediaItem.height || '',
       // URL properties
+      // https://developer.mozilla.org/en-US/docs/Web/API/URL#Properties
       hash: (mediaItem) => mediaItem.urlProps.hash || '',
       host: (mediaItem) => mediaItem.urlProps.host || '',
       hostname: (mediaItem) => mediaItem.urlProps.hostname || '',
