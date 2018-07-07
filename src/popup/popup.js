@@ -547,6 +547,9 @@ app.factory('NamingMask', [
       dateFormat: function (input, format = 'YYYY-MM-DDD') {
         let value = moment(input);
         return value.isValid() ? value.format(format) : input;
+      },
+      replace: (input = '', search = '', replace = '', flags = 'g') => {
+        return input.replace(new RegExp(search, flags), replace);
       }
     };
 
@@ -567,7 +570,7 @@ app.factory('NamingMask', [
     };
 
     /**
-     * Split the input by a separater and remove empty tokens.
+     * Split the input by a separator and remove empty tokens.
      */
     NamingMask.prototype.cleanSplit = function (input, separator) {
       return input.split(separator)
@@ -607,7 +610,10 @@ app.factory('NamingMask', [
     NamingMask.prototype.compileVariable = function (variableDef) {
       let self = this;
       try {
-        let tokens = this.cleanSplit(variableDef, '|');
+        // Construct list of known filters
+        const whitelist = `${Object.keys(FILTERS).join('|')}`;
+        const separator = new RegExp(`\\|(?=${whitelist})`, 'g')
+        let tokens = this.cleanSplit(variableDef, separator);
 
         // First token must be a variable.
         let variableName = tokens.shift();
