@@ -563,6 +563,11 @@ app.factory('NamingMask', [
         let value = moment(input);
         return value.isValid() ? value.format(format) : input;
       },
+      // Split input by separator and access nth element
+      split: (input, separator, index) => {
+        let elem = input.split(separator)[index]
+        return elem ? elem : input
+      },
       // Allow to get specific params of search
       getParam: (input, param) =>  {
         if (!(input instanceof URLSearchParams)) return 'BADARG';
