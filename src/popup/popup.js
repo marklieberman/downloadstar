@@ -294,6 +294,7 @@ app.factory('MediaItem', [
     function MediaItem (data) {
       this.source = data.source;
       this.url = data.url;
+      this.urlProps = new URL(this.url)
       this.mime = data.mime;
       this.tag = data.tag;
 
@@ -501,6 +502,20 @@ app.factory('NamingMask', [
       text: (mediaItem) => mediaItem.text || '',
       width: (mediaItem) => mediaItem.width || '',
       height: (mediaItem) => mediaItem.height || '',
+      // URL properties
+      // https://developer.mozilla.org/en-US/docs/Web/API/URL#Properties
+      hash: (mediaItem) => mediaItem.urlProps.hash || '',
+      host: (mediaItem) => mediaItem.urlProps.host || '',
+      hostname: (mediaItem) => mediaItem.urlProps.hostname || '',
+      href: (mediaItem) => mediaItem.urlProps.href || '',
+      origin: (mediaItem) => mediaItem.urlProps.origin || '',
+      password: (mediaItem) => mediaItem.urlProps.password || '',
+      pathname: (mediaItem) => mediaItem.urlProps.pathname || '',
+      port: (mediaItem) => mediaItem.urlProps.port || '',
+      protocol: (mediaItem) => mediaItem.urlProps.protocol || '',
+      search: (mediaItem) => mediaItem.urlProps.search || '',
+      searchParams: (mediaItem) => mediaItem.urlProps.searchParams || {},
+      username: (mediaItem) => mediaItem.urlProps.username || '',
       // Dynamic variables
       // An auto-incrementing number.
       inum: (mediaItem, namingMask) => {
@@ -552,6 +567,14 @@ app.factory('NamingMask', [
       split: (input, separator, index) => {
         let elem = input.split(separator)[index]
         return elem ? elem : input
+      },
+      // Allow to get specific params of search
+      getParam: (input, param) =>  {
+        if (!(input instanceof URLSearchParams)) return 'BADARG';
+        return input.has(param) ? input.get(param) : input
+      },
+      replace: (input = '', search = '', replace = '', flags = 'g') => {
+        return input.replace(new RegExp(search, flags), replace);
       }
     };
 
@@ -572,7 +595,7 @@ app.factory('NamingMask', [
     };
 
     /**
-     * Split the input by a separater and remove empty tokens.
+     * Split the input by a separator and remove empty tokens.
      */
     NamingMask.prototype.cleanSplit = function (input, separator) {
       return input.split(separator)
@@ -612,7 +635,10 @@ app.factory('NamingMask', [
     NamingMask.prototype.compileVariable = function (variableDef) {
       let self = this;
       try {
-        let tokens = this.cleanSplit(variableDef, '|');
+        // Construct list of known filters
+        const whitelist = `${Object.keys(FILTERS).join('|')}`;
+        const separator = new RegExp(`\\|(?=${whitelist})`, 'g')
+        let tokens = this.cleanSplit(variableDef, separator);
 
         // First token must be a variable.
         let variableName = tokens.shift();
