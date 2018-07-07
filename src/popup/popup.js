@@ -294,6 +294,7 @@ app.factory('MediaItem', [
     function MediaItem (data) {
       this.source = data.source;
       this.url = data.url;
+      this.urlProps = new URL(this.url)
       this.mime = data.mime;
       this.tag = data.tag;
 
@@ -501,6 +502,20 @@ app.factory('NamingMask', [
       text: (mediaItem) => mediaItem.text || '',
       width: (mediaItem) => mediaItem.width || '',
       height: (mediaItem) => mediaItem.height || '',
+      // URL properties
+      // https://developer.mozilla.org/en-US/docs/Web/API/URL#Properties
+      hash: (mediaItem) => mediaItem.urlProps.hash || '',
+      host: (mediaItem) => mediaItem.urlProps.host || '',
+      hostname: (mediaItem) => mediaItem.urlProps.hostname || '',
+      href: (mediaItem) => mediaItem.urlProps.href || '',
+      origin: (mediaItem) => mediaItem.urlProps.origin || '',
+      password: (mediaItem) => mediaItem.urlProps.password || '',
+      pathname: (mediaItem) => mediaItem.urlProps.pathname || '',
+      port: (mediaItem) => mediaItem.urlProps.port || '',
+      protocol: (mediaItem) => mediaItem.urlProps.protocol || '',
+      search: (mediaItem) => mediaItem.urlProps.search || '',
+      searchParams: (mediaItem) => mediaItem.urlProps.searchParams || {},
+      username: (mediaItem) => mediaItem.urlProps.username || '',
       // Dynamic variables
       // An auto-incrementing number.
       inum: (mediaItem, namingMask) => {
@@ -547,6 +562,11 @@ app.factory('NamingMask', [
       dateFormat: function (input, format = 'YYYY-MM-DDD') {
         let value = moment(input);
         return value.isValid() ? value.format(format) : input;
+      },
+      // Allow to get specific params of search
+      getParam: (input, param) =>  {
+        if (!(input instanceof URLSearchParams)) return 'BADARG';
+        return input.has(param) ? input.get(param) : input
       },
       replace: (input = '', search = '', replace = '', flags = 'g') => {
         return input.replace(new RegExp(search, flags), replace);
