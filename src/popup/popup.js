@@ -793,12 +793,15 @@ app.controller('PopupCtrl', [
   function ($scope, $q, MediaItem, MediaFilters, NamingMask) {
 
     var vm = this;
+    var doCheckControls = null;
+    var doCheckFilters = null;
 
     // ----- Controller init -----
     vm.scraping = true;
     vm.media = [];
     vm.mediaFilters = MediaFilters;
     vm.lastClickedItem = null;
+    vm.watchControls = false;
     vm.controls = {
       downloadPath: 'DownloadStar',
       showOptions: true,
@@ -834,6 +837,34 @@ app.controller('PopupCtrl', [
       vm.scrapeTab({}, true);
     });
 
+    // Lifecycle and Callbacks -----------------------------------------------------------------------------------------
+
+    /**
+     * Invoked on every digest cycle.
+     */
+    vm.$doCheck = function () {
+      // If watching controls, save controls when a changed is detected.
+      if (vm.watchControls) {
+        let doSave = false;
+
+        // Check if controls changed.
+        if (!angular.equals(doCheckControls, vm.controls)) {
+          doSave = doSave || !!doCheckControls;
+          doCheckControls = angular.copy(vm.controls);
+        }
+
+        // Check if filters changed.
+        if (!angular.equals(doCheckFilters, vm.filters)) {
+          doSave = doSave || !!doCheckFilters;
+          doCheckFilters = angular.copy(vm.filters);
+        }
+
+        if (doSave) {
+          saveControls();
+        }
+      }
+    };
+
     // Functions -------------------------------------------------------------------------------------------------------
 
     /**
@@ -842,7 +873,8 @@ app.controller('PopupCtrl', [
     function loadControls () {
       return browser.storage.local.get({
         controls: vm.controls,
-        filters: vm.filters
+        filters: vm.filters,
+        watchControls: false
       }).then(results => $scope.$apply(() => {
         // Restore filters by assignment to preserve the defineProperty magic.
         for (let key in results.filters) {
@@ -851,6 +883,9 @@ app.controller('PopupCtrl', [
 
         // Restore values for other controls.
         angular.extend(vm.controls, results.controls);
+
+        // Start watching controls for changes.
+        vm.watchControls = results.watchControls;
       }));
     }
 

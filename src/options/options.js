@@ -17,6 +17,7 @@ app.controller('OptionsCtrl', [
 
     // ----- Controller init -----
     vm.settings = {
+      watchControls: false,      // Watch controls for changes?
       maxConcurrentDownloads: 4, // Maximum concurrent downloads.
       keepHistory: 'always',     // Store download history?
       maxHistory: 1000           // Maximum number of history entries.
