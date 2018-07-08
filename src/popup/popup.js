@@ -293,8 +293,9 @@ app.factory('MediaItem', [
 
     function MediaItem (data) {
       this.source = data.source;
-      this.url = data.url;
-      this.urlProps = new URL(this.url)
+      this.url = new URL(data.url);
+      this.tabUrl = data.tabUrl;
+      this.frameUrl = data.frameUrl;
       this.mime = data.mime;
       this.tag = data.tag;
 
@@ -320,47 +321,6 @@ app.factory('MediaItem', [
      */
     MediaItem.cleanPath = function (input) {
       return input.replace(/[\\/:"*?<>|]+/gi, '');
-    };
-
-    /**
-     * Extract the path from the URL.
-     * @return {Object} An object with properties:
-     *   value: The path extracted from the URL.
-     *   start: Index where the path begins in the URL.
-     */
-    MediaItem.prototype.getPath = function () {
-      let noPath = {
-        value: '/',
-        start: -1
-      };
-
-      if (!this.isDataUrl) {
-        // Locate start of path.
-        let pathStart = this.url.indexOf('://');
-        if (!~pathStart) {
-          return noPath;
-        }
-        pathStart = this.url.indexOf('/', pathStart + 3);
-        if (!~pathStart) {
-          return noPath;
-        }
-
-        // Locate end of path.
-        let pathEnd = this.url.indexOf('?');
-        if (!~pathEnd) {
-          pathEnd = this.url.indexOf('#');
-        }
-        if (!~pathEnd) {
-          pathEnd = this.url.length;
-        }
-
-        return {
-          value: this.url.substring(pathStart, pathEnd),
-          start: pathStart
-        };
-      }
-
-      return noPath;
     };
 
     /**
@@ -398,16 +358,16 @@ app.factory('MediaItem', [
       }
 
       // Handle data: URLs with custom logic.
-      this.isDataUrl = this.url.startsWith('data:');
+      this.isDataUrl = this.getUrl().startsWith('data:');
       if (this.isDataUrl) {
         this.isFilenameInUrl = false;
         this.isExtensionInUrl = false;
 
         // Get the mime type from the data: URL if available.
-        let mimeStart = this.url.indexOf(':');
-        let mimeEnd = this.url.indexOf(';');
+        let mimeStart = this.getUrl().indexOf(':');
+        let mimeEnd = this.getUrl().indexOf(';');
         if (!!~mimeEnd) {
-          this.mime = this.url.substring(mimeStart + 1, mimeEnd);
+          this.mime = this.getUrl().substring(mimeStart + 1, mimeEnd);
         } else {
           // Spec says data: URL defaults to this when mime isnt provided.
           this.mime = 'text/plain';
@@ -426,18 +386,16 @@ app.factory('MediaItem', [
       }
 
       // Try to extract the filename from the URL's path.
-      this.path = this.getPath();
-      if (this.path.value === '/') {
+      if (this.url.pathname === '/') {
         // No path means this it is an index page.
         this.filename = 'index';
         this.extension = 'html';
         return true;
-      } else
-      if (this.path.start >= 0) {
-        if (tryGetNameAndExt(this, this.path.value)) {
+      } else {
+        if (tryGetNameAndExt(this, this.url.pathname)) {
           return true;
         }
-        if (tryGetBasename(this, this.path.value)) {
+        if (tryGetBasename(this, this.url.pathname)) {
           return true;
         }
       }
@@ -449,6 +407,13 @@ app.factory('MediaItem', [
       // Look for filenames in the query or fragment.
       // TODO Not implemented yet.
       return false;
+    };
+
+    /**
+     * Get the URL.
+     */
+    MediaItem.prototype.getUrl = function () {
+      return this.url.href;
     };
 
     /**
@@ -493,88 +458,87 @@ app.factory('NamingMask', [
 
     // Define the supported variables.
     const VARIABLES = {
-      // Properties of MediaItem.
-      file: (mediaItem) => mediaItem.filename || '',
-      ext: (mediaItem) => mediaItem.extension || '',
-      fileext: (mediaItem) => mediaItem.getFilename() || '',
-      alt: (mediaItem) => mediaItem.alt || '',
-      title: (mediaItem) => mediaItem.title || '',
-      text: (mediaItem) => mediaItem.text || '',
-      width: (mediaItem) => mediaItem.width || '',
-      height: (mediaItem) => mediaItem.height || '',
-      // URL properties
-      // https://developer.mozilla.org/en-US/docs/Web/API/URL#Properties
-      hash: (mediaItem) => mediaItem.urlProps.hash || '',
-      host: (mediaItem) => mediaItem.urlProps.host || '',
-      hostname: (mediaItem) => mediaItem.urlProps.hostname || '',
-      href: (mediaItem) => mediaItem.urlProps.href || '',
-      origin: (mediaItem) => mediaItem.urlProps.origin || '',
-      password: (mediaItem) => mediaItem.urlProps.password || '',
-      pathname: (mediaItem) => mediaItem.urlProps.pathname || '',
-      port: (mediaItem) => mediaItem.urlProps.port || '',
-      protocol: (mediaItem) => mediaItem.urlProps.protocol || '',
-      search: (mediaItem) => mediaItem.urlProps.search || '',
-      searchParams: (mediaItem) => mediaItem.urlProps.searchParams || {},
-      username: (mediaItem) => mediaItem.urlProps.username || '',
-      // Dynamic variables
+      // Empty variable for testing expressions.
+      empty: (mediaItem) => null,
+      // -- Properties of MediaItem.
+      file: (mediaItem) => mediaItem.filename,
+      ext: (mediaItem) => mediaItem.extension,
+      fileext: (mediaItem) => mediaItem.getFilename(),
+      alt: (mediaItem) => mediaItem.alt,
+      title: (mediaItem) => mediaItem.title,
+      text: (mediaItem) => mediaItem.text,
+      width: (mediaItem) => mediaItem.width,
+      height: (mediaItem) => mediaItem.height,
+      // -- Variables that take a parameter.
+      // URL of the MediaItem.
+      itemUrl: function (mediaItem) {
+        return NamingMask.urlAsVariable(mediaItem.url, this.parameter);
+      },
+      // URL of the frame in which the MediaItem was found.
+      frameUrl: function (mediaItem) {
+        return NamingMask.urlAsVariable(mediaItem.frameUrl, this.parameter);
+      },
+      // URL of the tab in which the MediaItem was found.
+      tabUrl: function (mediaItem) {
+        return NamingMask.urlAsVariable(mediaItem.tabUrl, this.parameter);
+      },
+      // -- Dynamic or stateful variables.
       // An auto-incrementing number.
-      inum: (mediaItem, namingMask) => {
-        return mediaItem.checked ? namingMask.inum++ : 0;
+      inum: function (mediaItem) {
+        return mediaItem.checked ? this.namingMask.inum++ : 0;
       },
       // The current date.
-      date: () => {
-        return new Date();
+      date: function (mediaItem) {
+        return moment().format(this.parameter || 'YYYY-MM-DD');
       }
     };
 
     // Define the supported filters.
     const FILTERS = {
       // Provides a default value if input is empty.
-      def: function (input = '', defaultValue = '') {
-        return input ? input : defaultValue;
+      def: (input = '', defaultValue = '') => {
+        return NamingMask.isEmptyValue(input) ? defaultValue : input;
       },
       // Provides a different variable if input is empty.
-      defVar: function (input, variableName) {
-        let variableFunc = VARIABLES[variableName];
-        if (!variableFunc) {
-          return 'BADARG';
+      defVar: function (input = '', variableName = 'empty') {
+        if (NamingMask.isEmptyValue(input)) {
+          try {
+            let variableFunc = NamingMask.getVariableFunc(variableName, this.namingMask);
+            return variableFunc(this.mediaItem);
+          } catch (error) {
+            return 'BADARG';
+          }
         }
-        return input ? input : variableFunc(this.mediaItem);
+        return input;
       },
       // Limit the input to the given length.
-      limit: function (input = '', length = Number.NaN) {
+      limit: (input = '', length = Number.NaN) => {
         length = Number(length);
         return Number.isFinite(length) ? input.substring(0, length) : input;
       },
       // Trim whitespace from the input.
-      trim: function (input = '') {
-        return input.trim();
-      },
+      trim: (input = '') => input.trim(),
       // Lowercase the input.
-      lower: function (input = '') {
-        return input.toLocaleLowerCase();
-      },
+      lower: (input = '') => input.toLocaleLowerCase(),
       // Uppercase the input.
-      upper: function (input = '') {
-        return input.toLocaleUpperCase();
+      upper: (input = '') => input.toLocaleUpperCase(),
+      // Split the input and return the Nth element.
+      split: (input = '', separator = ',', index = 0) => {
+        try {
+          separator = NamingMask.asStringOrRegex(separator);
+        } catch (error) {
+          return 'BADREGEX';
+        }
+        return input.split(separator)[index];
       },
-      // Format a date using moment.js.
-      dateFormat: function (input, format = 'YYYY-MM-DDD') {
-        let value = moment(input);
-        return value.isValid() ? value.format(format) : input;
-      },
-      // Split input by separator and access nth element
-      split: (input, separator, index) => {
-        let elem = input.split(separator)[index]
-        return elem ? elem : input
-      },
-      // Allow to get specific params of search
-      getParam: (input, param) =>  {
-        if (!(input instanceof URLSearchParams)) return 'BADARG';
-        return input.has(param) ? input.get(param) : input
-      },
-      replace: (input = '', search = '', replace = '', flags = 'g') => {
-        return input.replace(new RegExp(search, flags), replace);
+      // Search and replace in the input.
+      replace: (input = '', search = '', replace = '') => {
+        try {
+          search = NamingMask.asStringOrRegex(search);
+        } catch (error) {
+          return 'BADREGEX';
+        }
+        return input.replace(search, replace);
       }
     };
 
@@ -588,19 +552,133 @@ app.factory('NamingMask', [
     }
 
     /**
+     * True if the input is not a number and not truthy, otherwise false.
+     */
+    NamingMask.isEmptyValue = function (input) {
+      return !(angular.isNumber(input) || input);
+    };
+
+    /**
+     * Tokenize the input using the separator.
+     * Do not split anything enclosed by unescaped forward-slashes.
+     */
+    NamingMask.tokenize = function (input, separator) {
+      let tokens = [], token = '', escaped = false, inRegex = false;
+      for (let i = 0; i < input.length; i++) {
+        let c = input[i];
+
+        // Set flags when encountering special characters.
+        switch (c) {
+          case '\\':
+            // Ignore the following special character.
+            escaped = true;
+            break;
+          case '/':
+            // Start or end of a regular expression.
+            if (!escaped) {
+              inRegex = !inRegex;
+            }
+            break;
+        }
+
+        // Start a new token when a separator is encountered, unless inside a regex.
+        if ((c === separator) && !inRegex) {
+          // Start a new token.
+          if (token) {
+        	  tokens.push(token);
+          }
+          token = '';
+        } else {
+          // Append to the current token.
+        	token += c;
+        }
+
+        // Reset the escaped flag.
+        escaped = false;
+      }
+
+      // Append the final token to the array.
+      if (token) {
+        tokens.push(token);
+      }
+
+      return tokens;
+    };
+
+    /**
+     * Split variables with an argument into an array.
+     */
+    NamingMask.parseVariable = function (variableName) {
+      let start = variableName.indexOf('[');
+      if (!!~start) {
+        let end = variableName.indexOf(']', start + 1);
+        if (!!~end) {
+          return [
+            variableName.substring(0, start),
+            variableName.substring(start + 1, end)
+          ];
+        }
+      }
+      return [ variableName, null ];
+    };
+
+    /**
+     * Get a function which produces the output for a variable.
+     */
+    NamingMask.getVariableFunc = function (variableDef, namingMask) {
+      let [ variableName, variableParam ] = NamingMask.parseVariable(variableDef);
+      let variableFunc = VARIABLES[variableName];
+      if (!variableFunc) {
+        throw browser.i18n.getMessage('errorNamingMaskBadVariable', variableName);
+      }
+
+      // Bind a context for the variable function.
+      return variableFunc.bind({
+        namingMask,
+        parameter: variableParam
+      });
+    };
+
+    /**
+     * Convert a string enclosed by forward-slashes to a regular expression.
+     */
+    NamingMask.asStringOrRegex = function (search) {
+      if (search.startsWith('/')) {
+        let index = search.lastIndexOf('/');
+        if (!!~index && (index !== 0)) {
+          let pattern = search.substring(1, index);
+          let flags = search.substring(index + 1) || 'gi';
+          return new RegExp(pattern, flags);
+        }
+      }
+      return search;
+    };
+
+    /**
+     * A variable implementation to access a property of a URL instance.
+     */
+    NamingMask.urlAsVariable = function (url, parameter) {
+      if (parameter) {
+        if (parameter.startsWith('search')) {
+          // Individual query parameters can be accessed using dot notation.
+          let [ unused, param ] = parameter.split('.');
+          return angular.isString(param) ? url.searchParams.get(param) : url.search;
+        } else {
+          let property = url[parameter];
+          if (angular.isString(property)) {
+            // data: URLs seem to have "null" origins.
+            return (property !== "null") ? property : null;
+          }
+        }
+      }
+      return 'BADPARAM';
+    };
+
+    /**
      * Reset the internal variables such as the auto-incrementing number.
      */
     NamingMask.prototype.reset = function () {
       this.inum = 1;
-    };
-
-    /**
-     * Split the input by a separator and remove empty tokens.
-     */
-    NamingMask.prototype.cleanSplit = function (input, separator) {
-      return input.split(separator)
-        .map(token => token ? token.trim() : null)
-        .filter(token => !!token);
     };
 
     /**
@@ -633,28 +711,28 @@ app.factory('NamingMask', [
      * Compile a variable expression.
      */
     NamingMask.prototype.compileVariable = function (variableDef) {
-      let self = this;
       try {
-        // Construct list of known filters
-        const whitelist = `${Object.keys(FILTERS).join('|')}`;
-        const separator = new RegExp(`\\|(?=${whitelist})`, 'g')
-        let tokens = this.cleanSplit(variableDef, separator);
+        let tokens = NamingMask.tokenize(variableDef, '|');
 
         // First token must be a variable.
-        let variableName = tokens.shift();
-        let variableFunc = VARIABLES[variableName];
-        if (!variableFunc) {
-          throw browser.i18n.getMessage('errorNamingMaskBadVariable', variableName);
-        }
+        let variableFunc = NamingMask.getVariableFunc(tokens.shift(), this);
 
         // Remaining tokens are filters.
         // Generate a pipe of filters to evaluate.
         let pipe = tokens.map(this.compileFilter, this);
 
         // Return a function that evaluates the pipe on the variable.
-        return (mediaItem) => pipe.reduce((output, filterFunc) => {
-          return filterFunc(output, mediaItem);
-        }, variableFunc(mediaItem, self));
+        return (mediaItem) => {
+          // Generate the initial value for the variable.
+          let value = variableFunc(mediaItem);
+          value = !NamingMask.isEmptyValue(value) ? value : '';
+
+          // Evaluate each filter in the pipe.
+          return pipe.reduce((output, filterFunc) => {
+            let result = filterFunc(output, mediaItem);
+            return !NamingMask.isEmptyValue(result) ? result : '';
+          }, value);
+        };
       } catch (error) {
         this.error = this.error || error;
         return () => 'BADVAR';
@@ -667,7 +745,7 @@ app.factory('NamingMask', [
     NamingMask.prototype.compileFilter = function (filterDef) {
       let self = this;
       try {
-        let tokens = this.cleanSplit(filterDef, ':');
+        let tokens = NamingMask.tokenize(filterDef, ':');
 
         // First token is the function name.
         let filterName = tokens.shift();
@@ -680,12 +758,10 @@ app.factory('NamingMask', [
         // Return a function that evaluates the filter.
         return (input, mediaItem) => {
           // Create a context object for the filter.
-          let context = {
+          return filterFunc.bind({
             namingMask: self,
             mediaItem
-          };
-
-          return filterFunc.bind(context)(input, ...tokens);
+          })(input, ...tokens);
         };
       } catch (error) {
         this.error = this.error || error;
@@ -803,16 +879,29 @@ app.controller('PopupCtrl', [
         runAt: 'document_end',
         allFrames: true
       }).then(frames => {
-        // Flatten the per-frame results, construct MediaItem instances, and evaluate filters.
-        let mediaItems = frames.reduce((media, frame) => {
-          for (let i = 0; i < frame.length; i++) {
-            media.push(new MediaItem(frame[i]));
-          }
-          return media;
-        }, []);
-        vm.evaluateFilters(mediaItems);
-        vm.evaluateNamingMask(mediaItems);
-        return mediaItems;
+        try {
+          // Find the top frame to determinate the tab URL.
+          let topFrame = frames.find(frame => frame.meta.topFrame);
+          let tabUrl = new URL(topFrame.meta.frameUrl);
+
+          // Construct MediaItem instances from the scraped items in each frame.
+          let mediaItems = frames.reduce((media, frame) => {
+            let frameUrl = new URL(frame.meta.frameUrl);
+            for (let i = 0; i < frame.items.length; i++) {
+              media.push(new MediaItem(angular.extend(frame.items[i], {
+                tabUrl,
+                frameUrl
+              })));
+            }
+            return media;
+          }, []);
+          vm.evaluateFilters(mediaItems);
+          vm.evaluateNamingMask(mediaItems);
+          return mediaItems;
+        } catch (error) {
+          console.log('media item error', error);
+          return [];
+        }
       }).catch(error => {
         // Something went wrong and the tab could not be scraped.
         console.log('scrape tab failed', tab.id || 'activeTab', tab.index || 'activeTab', error);
@@ -877,7 +966,7 @@ app.controller('PopupCtrl', [
           .map(filter => filter.type);
 
         // Evaluate the fast filter.
-        if (fastFilterPredicate(mediaItem.url)) {
+        if (fastFilterPredicate(mediaItem.getUrl())) {
           mediaItem.matches.push('fast');
         }
 
@@ -937,7 +1026,7 @@ app.controller('PopupCtrl', [
           return false;
         } else
         if (needle) {
-          let haystack = mediaItem.url.toLocaleLowerCase();
+          let haystack = mediaItem.getUrl().toLocaleLowerCase();
           return !!~haystack.indexOf(needle);
         } else {
           return true;
@@ -1060,7 +1149,7 @@ app.controller('PopupCtrl', [
               eraseHistory: vm.controls.eraseHistory,
             },
             mediaItems: vm.getCheckedMediaItems().map(mediaItem => ({
-              url: mediaItem.url,
+              url: mediaItem.getUrl(),
               filename: mediaItem.maskName || mediaItem.getFilename()
             }))
           }
@@ -1149,8 +1238,8 @@ app.directive('urlWithFilename', ['$timeout', ($timeout) => {
             mediaItem.getFilename() : // Filename with extension if known.
             mediaItem.filename;       // Filename without extension.
 
-          let pathStart = mediaItem.path ? mediaItem.path.start : 0;
-          let index = mediaItem.url.indexOf(filename, pathStart);
+          let pathStart = mediaItem.getUrl().indexOf(mediaItem.url.pathname);
+          let index = mediaItem.getUrl().indexOf(filename, pathStart);
           if (!!~index) {
             // Filename is present in the URL.
             shortenHasFilename(mediaItem, filename, index, maxLength);
@@ -1181,7 +1270,7 @@ app.directive('urlWithFilename', ['$timeout', ($timeout) => {
         // Extract the before filename component.
         scope.before = '…';
         if (remain > 0) {
-          scope.before = mediaItem.url.substring(0, index);
+          scope.before = mediaItem.getUrl().substring(0, index);
           let maxUse = Math.ceil(remain * 0.9) - 1;
           if (maxUse < scope.before.length) {
             scope.before = '…' + scope.before.substring(scope.before.length - maxUse);
@@ -1194,7 +1283,7 @@ app.directive('urlWithFilename', ['$timeout', ($timeout) => {
         // Extract  the after filename component.
         scope.after = '…';
         if (remain > 0) {
-          scope.after = mediaItem.url.substring(index + filename.length);
+          scope.after = mediaItem.getUrl().substring(index + filename.length);
           if (remain < scope.after.length) {
             scope.after = scope.after.substring(0, remain - 1) + '…';
           }
@@ -1207,10 +1296,10 @@ app.directive('urlWithFilename', ['$timeout', ($timeout) => {
       function shortenNoFilename (mediaItem, maxLength) {
         scope.after = null;
         scope.filename = null;
-        if (mediaItem.url.length >= maxLength) {
-          scope.before = mediaItem.url.substring(0, maxLength - 1) + '…';
+        if (mediaItem.getUrl().length >= maxLength) {
+          scope.before = mediaItem.getUrl().substring(0, maxLength - 1) + '…';
         } else {
-          scope.before = mediaItem.url;
+          scope.before = mediaItem.getUrl();
         }
       }
 

@@ -3,13 +3,9 @@
 /**
  * Filter invalid urls such as javascript: or blob: URLs.
  */
-function isValidUrl (media) {
+function isValidUrl (url) {
   /* jshint scripturl:true */
-  return (
-    media.url &&
-    !media.url.startsWith('javascript:') &&
-    !media.url.startsWith('blob:')
-  );
+  return (url && (url !== "null") && !url.startsWith('javascript:') && !url.startsWith('blob:'));
 }
 
 /**
@@ -139,25 +135,26 @@ function getLinksFromText () {
 }
 
 // Collect the media from this tab.
-var media = Array.concat(
-  getMediaAndLinks(),
-  getAudioVideoMedia(),
-  getLinksFromText()
-).filter(isValidUrl);
-
-// Eliminate duplicate URLs on first encountered basis.
 var duplicates = new Set();
-media = media.filter(item => {
-  if (duplicates.has(item.url)) {
-    return false;
-  } else {
+var media = {
+  meta: {
+    frameUrl: String(window.location),
+    topFrame: (window.top === window)
+  },
+  items: Array.concat(getMediaAndLinks(), getAudioVideoMedia(), getLinksFromText()).filter(item => {
+    // Eliminate invalid URLs.
+    // Eliminate duplicate URLs on first encountered basis.
+    if (!isValidUrl(item.url) || duplicates.has(item.url)) {
+      return false;
+    }
+
     duplicates.add(item.url);
     return true;
-  }
-});
+  })
+};
 
 // Sort the media by URL.
-media.sort((a, b) => a.url.localeCompare(b.url));
+media.items.sort((a, b) => a.url.localeCompare(b.url));
 
 // Return value for executeScript().
 media; // jshint ignore:line

@@ -173,7 +173,7 @@
                 <input class="form-control" type="text" name="namingMask"
                        ng-class="{ 'is-invalid': vm.namingMaskError }"
                        ng-model="vm.controls.namingMask"
-                       ng-model-options="{ debounce: 200 }"
+                       ng-model-options="{ debounce: 500 }"
                        ng-change="vm.evaluateNamingMask()"></input>
                 <div class="input-group-append">
                   <!-- show metadata button -->
@@ -277,7 +277,7 @@
                   }"
                   ng-repeat="item in vm.visibleMedia = (vm.media | filter:vm.filterMediaSource | filter:vm.filterQuickSearch())"
                   ng-click="vm.toggleMediaItemChecked(item, $index, $event)"
-                  title="{{::item.url}}">
+                  title="{{::item.getUrl()}}">
                 <!-- media item column -->
                 <td class="media-item">
                   <!-- URL with filename highlighting -->
@@ -323,10 +323,10 @@
                 <!-- media thumbnail column -->
                 <td class="media-thumb">
                   <img ng-if="item.isImage()"
-                       ng-src="{{::item.url}}"
+                       ng-src="{{::item.getUrl()}}"
                        remove-on-error></img>
                   <video ng-if="item.isVideo()"
-                         ng-src="{{::item.url}}"
+                         ng-src="{{::item.getUrl()}}"
                          remove-on-error></video>
                 </td>
               </tr>
