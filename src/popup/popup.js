@@ -1238,7 +1238,8 @@ app.directive('urlWithFilename', ['$timeout', ($timeout) => {
             mediaItem.getFilename() : // Filename with extension if known.
             mediaItem.filename;       // Filename without extension.
 
-          let pathStart = mediaItem.getUrl().indexOf(mediaItem.url.pathname);
+          // Get the index of the path. Start searching after the origin.
+          let pathStart = mediaItem.getUrl().indexOf(mediaItem.url.pathname, mediaItem.url.origin.length);
           let index = mediaItem.getUrl().indexOf(filename, pathStart);
           if (!!~index) {
             // Filename is present in the URL.
