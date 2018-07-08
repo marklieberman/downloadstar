@@ -31,6 +31,8 @@ class QueueItem {
     this.mediaItem = data.mediaItem;
     this.state = data.state || null;
     this.downloadId = null;
+    this.start = null;
+    this.finish = null;
 
     // Generate the target path for this item.
     this.targetPath = [ data.options.downloadPath, this.getFilename() ]
@@ -71,6 +73,21 @@ class QueueItem {
    */
   isNew () {
     return !this.state && !this.$picked;
+  }
+
+  /**
+   * True if the download has ended for any reason, otherwise false.
+   */
+  isDone () {
+    switch (this.state) {
+      case 'skipped':
+      case 'interrupted':
+      case 'failed':
+      case 'completed':
+        return true;
+      default:
+        return false;
+    }
   }
 
   /**
@@ -166,8 +183,7 @@ class QueueItem {
    * True if the history entry matches the URL and download path of this item, otherwise false.
    */
   isHistory (historyEntry) {
-    return (this.getUrl() === historyEntry.url) &&
-      (this.getTargetPath() === historyEntry.path);
+    return (this.getUrl() === historyEntry.url) && (this.getTargetPath() === historyEntry.path);
   }
 
   /**
@@ -316,15 +332,26 @@ browser.downloads.onChanged.addListener(downloadDelta => {
  * Add the media items to the download queue.
  */
 function enqueueMediaItems (data) {
+  // Until the queue is exposed and user can manually clean it, prevent the queue from growing without bound.
+  // Limit the queue to the last 1000 completed items plus any new items.
+  let doneItems = state.queue.reduce((count, item) => item.isDone() ? count + 1 : count, 0);
+  if (doneItems > 1000) {
+    // Remove done items until below the cap.
+    doneItems -= 1000;
+    for (let i = 0; (i < state.queue.length) && (doneItems > 0); i++) {
+      if (state.queue[i].isDone()) {
+        state.queue.splice(i, 1);
+        i--;
+        doneItems--;
+      }
+    }
+  }
+
+  // Add the new items to the queue.
   data.mediaItems.forEach(mediaItem => state.queue.push(new QueueItem({
     options: data.options,
     mediaItem
   })));
-
-  // Limit the queue to the last 1000 items for the time being.
-  while (state.queue.length > 1000) {
-    state.queue.shift();
-  }
 
   processNextQueuedItem();
 }
@@ -333,6 +360,9 @@ function enqueueMediaItems (data) {
  * Invoked when a QueueItem starts downloading.
  */
 function onDownloadCreated (queueItem, downloadItem) {
+  // Record when the download started.
+  queueItem.start = new Date().getTime();
+
   // Detect existing files by checking if the download was renamed.
   if (queueItem.isSkipOnConflict() && queueItem.wasRenamed(downloadItem.filename)) {
     // File got renamed when the download was created - it must already exist.
@@ -346,6 +376,9 @@ function onDownloadCreated (queueItem, downloadItem) {
  * Invoked when a QueueItem stops downloading.
  */
 function onDownloadStopped (queueItem, completed) {
+  // Record when the download finished.
+  queueItem.finish = new Date().getTime();
+
   // Release any resources allocated during the download.
   queueItem.cleanup();
 

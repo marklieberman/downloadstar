@@ -1,7 +1,9 @@
 /* global angular */
 'use strict';
 
-var app = angular.module('dsPopupApp', []);
+var app = angular.module('dsPopupApp', [
+  'ds-moment'
+]);
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Main controller for the queue page.

@@ -28,6 +28,7 @@
             <th>Filename</th>
             <th>Target Path</th>
             <th>State</th>
+            <th>Start and Finish</th>
           </tr>
         </thead>
         <tbody>
@@ -37,6 +38,11 @@
             <td>{{item.mediaItem.filename}}</td>
             <td>{{item.targetPath}}</td>
             <td>{{item.state}}</td>
+            <td>
+              <span ng-if="item.start">
+                {{item.start | momentFormat:'HH:MM:ss'}} - {{item.finish | momentFormat:'HH:MM:ss'}}
+              </span>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -46,6 +52,8 @@
 
     <!-- library components -->
     <script src="../common/lib/angular.min.js"></script>
+    <script src="../common/lib/moment.min.js"></script>
+    <script src="../common/ds-moment.js"></script>
     <script src="queue.js"></script>
 
   </body>

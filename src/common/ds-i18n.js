@@ -1,6 +1,6 @@
 'use strict';
 
-var i18nModule = angular.module('i18n', []);
+var i18nModule = angular.module('ds-i18n', []);
 
 i18nModule.directive('i18n', [
   function () {
