@@ -931,7 +931,6 @@ app.controller('PopupCtrl', [
             return media;
           }, []);
           vm.evaluateFilters(mediaItems);
-          vm.evaluateNamingMask(mediaItems);
           return mediaItems;
         } catch (error) {
           console.log('media item error', error);
@@ -945,7 +944,10 @@ app.controller('PopupCtrl', [
 
       // Put the scraped media on the controller if requested.
       return !assign ? promise : promise
-        .then(media => vm.media = media)
+        .then(media => {
+          vm.media = media;
+          vm.evaluateNamingMask(vm.getVisibleMediaItems());
+        })
         .finally(() => vm.scraping = false);
     };
 
@@ -976,7 +978,10 @@ app.controller('PopupCtrl', [
 
       // Put the scraped media on the controller if requested.
       return !assign ? promise : promise
-        .then(media => vm.media = media)
+        .then(media => {
+          vm.media = media;
+          vm.evaluateNamingMask(vm.getVisibleMediaItems());
+        })
         .finally(() => vm.scraping = false);
     };
 
@@ -1041,7 +1046,7 @@ app.controller('PopupCtrl', [
      */
     vm.clearNamingMask = function () {
       vm.controls.namingMask = '';
-      vm.evaluateNamingMask();
+      vm.evaluateNamingMask(vm.getVisibleMediaItems());
     };
 
     /**
@@ -1090,7 +1095,15 @@ app.controller('PopupCtrl', [
     };
 
     /**
-     * Get all checked MediaItems from enabled sources.
+     * Get MediaItems from enabled sources.
+     * Template logic can use vm.visibleMedia which is updated from the ng-repeat.
+     */
+    vm.getVisibleMediaItems = () => {
+      return vm.media.filter(mediaItem => vm.controls.sources[mediaItem.source]);
+    };
+
+    /**
+     * Get checked MediaItems from enabled sources.
      */
     vm.getCheckedMediaItems = () => {
       return vm.media.filter(mediaItem => mediaItem.checked && vm.controls.sources[mediaItem.source]);
@@ -1140,9 +1153,16 @@ app.controller('PopupCtrl', [
       // Record the last clicked item in the table.
       vm.lastClickedItem = mediaItem;
 
-      // Update the naming mask for checked items.
-      // This should refresh variables like ${inum}.
-      vm.evaluateNamingMask(vm.getCheckedMediaItems());
+      // Evaluate the naming mask again.
+      vm.evaluateNamingMask(vm.getVisibleMediaItems());
+    };
+
+    /**
+     * Toggle the sources for which MediaItems are visible.
+     */
+    vm.toggleMediaSource = function (source) {
+      vm.controls.sources[source] = !vm.controls.sources[source];
+      vm.evaluateNamingMask(vm.getVisibleMediaItems());
     };
 
     /**
