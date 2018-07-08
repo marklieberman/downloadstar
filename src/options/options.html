@@ -58,6 +58,22 @@
           <small class="form-text text-muted"
                  i18n="'maxHistoryHelp'"></small>
         </div>
+
+        <!-- optional permissions -->
+        <div class="form-group">
+          <label i18n="'optionalPermissions'"></label>
+          <div>
+            <div class="btn-group-vertical">
+              <button class="btn btn-secondary" type="button"
+                      ng-click="vm.grantAllUrlsPermission()"
+                      ng-disabled="vm.hasAllUrlsPermission()"
+                      i18n="'grantAllUrlsPermission'"></button><br/>
+              <button class="btn btn-secondary" type="button"
+                      ng-click="vm.removeAllPermissions()"
+                      i18n="'removePermissions'"></button>
+            </div>
+          </div>
+        </div>
       </form>
     </div>
 

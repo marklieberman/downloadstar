@@ -20,10 +20,13 @@
   },
 
   "permissions": [
-    "<all_urls>",
     "activeTab",
     "downloads",
     "storage"
+  ],
+
+  "optional_permissions": [
+    "<all_urls>"
   ],
 
   "browser_action": {

@@ -955,34 +955,44 @@ app.controller('PopupCtrl', [
      * Scrape all tabs in the window to find downloadable content.
      */
     vm.scrapeAllTabs = (assign) => {
-      if (assign) {
-        vm.media = [];
-        vm.scraping = true;
-      }
-      let promise = $q.when(browser.tabs.query({ currentWindow: true }).then(tabs => {
-        return $q.all(tabs
-          // Do not scrape hidden or discarded tabs.
-          .filter(tab => !tab.hidden && !tab.discarded)
-          // Scrape each tab for media.
-          .map(tab => vm.scrapeTab(tab, false))
-        ).then(results => {
-          // Flatten the resulting array of results for each tab.
-          return results.reduce((media, tabResult) => {
-            for (let i = 0; i < tabResult.length; i++) {
-              media.push(tabResult[i]);
-            }
-            return media;
-          }, []);
-        });
-      }));
+      // Check permission to inject scripts into all of the other tabs.
+      // Can't just request because of https://bugzilla.mozilla.org/show_bug.cgi?id=1432083.
+      return browser.permissions.contains({ origins: [ '<all_urls>' ] }).then(granted => {
+        if (!granted) {
+          // Permission not granted.
+          window.alert(browser.i18n.getMessage('needAllUrlsPermission'));
+          return;
+        }
 
-      // Put the scraped media on the controller if requested.
-      return !assign ? promise : promise
-        .then(media => {
-          vm.media = media;
-          vm.evaluateNamingMask(vm.getVisibleMediaItems());
-        })
-        .finally(() => vm.scraping = false);
+        if (assign) {
+          vm.media = [];
+          vm.scraping = true;
+        }
+        let promise = $q.when(browser.tabs.query({ currentWindow: true }).then(tabs => {
+          return $q.all(tabs
+            // Do not scrape hidden or discarded tabs.
+            .filter(tab => !tab.hidden && !tab.discarded)
+            // Scrape each tab for media.
+            .map(tab => vm.scrapeTab(tab, false))
+          ).then(results => {
+            // Flatten the resulting array of results for each tab.
+            return results.reduce((media, tabResult) => {
+              for (let i = 0; i < tabResult.length; i++) {
+                media.push(tabResult[i]);
+              }
+              return media;
+            }, []);
+          });
+        }));
+
+        // Put the scraped media on the controller if requested.
+        return !assign ? promise : promise
+          .then(media => {
+            vm.media = media;
+            vm.evaluateNamingMask(vm.getVisibleMediaItems());
+          })
+          .finally(() => vm.scraping = false);
+      });
     };
 
     /**

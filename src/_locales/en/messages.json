@@ -167,5 +167,20 @@
   },
   "watchControlsHelp": {
     "message": "Changes to controls in the popup are saved immediately when checked. Otherwise, they are saved when you press the download button."
+  },
+  "optionalPermissions": {
+    "message": "Optional Permissions"
+  },
+  "grantAllUrlsPermission": {
+    "message": "Allow the addon to scrape links and media in any tab"
+  },
+  "removePermissions": {
+    "message": "Remove all optional permissions granted to this addon"
+  },
+  "removePermissionsSuccess": {
+    "message": "All optional permissions have been removed."
+  },
+  "needAllUrlsPermission": {
+    "message": "Download Star requires additional permissions to scrape all tabs. Please enable this feature in the addon options by clicking on \"Allow the addon to scrape links and media in any tab\" under the Optional Permissions heading."
   }
 }

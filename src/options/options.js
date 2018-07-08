@@ -22,11 +22,17 @@ app.controller('OptionsCtrl', [
       keepHistory: 'always',     // Store download history?
       maxHistory: 1000           // Maximum number of history entries.
     };
+    vm.permissions = {
+      origins: []
+    };
 
     // Load settings from storage.
     $q.when(browser.storage.local.get(vm.settings)).then(results => {
       angular.copy(results, vm.settings);
       doCheckSettings = angular.copy(results);
+
+      // Refresh permissions.
+      vm.refreshPermissions();
     });
 
     // Lifecycle and Callbacks -----------------------------------------------------------------------------------------
@@ -41,6 +47,41 @@ app.controller('OptionsCtrl', [
         browser.storage.local.set(vm.settings);
         console.log('settings changed', vm.settings);
       }
+    };
+
+    // Functions -------------------------------------------------------------------------------------------------------
+
+    /**
+     * Refresh the permissions granted to the addon.
+     */
+    vm.refreshPermissions = () => {
+      $q.when(browser.permissions.getAll()).then(permissions => vm.permissions = permissions);
+    };
+
+    /**
+     * True if the addon has been granted '<all_urls>', otherwise false.
+     **/
+    vm.hasAllUrlsPermission = () => {
+      return !!~vm.permissions.origins.indexOf('<all_urls>');
+    };
+
+    /**
+     * Grant the '<all_urls>' host permissions required to use scrape all tabs.
+     */
+    vm.grantAllUrlsPermission = () => {
+      browser.permissions.request({ origins: [ '<all_urls>' ] }).then(granted => {
+        vm.refreshPermissions();
+      });
+    };
+
+    /**
+     * Remove all optional permissions used by the addon.
+     */
+    vm.removeAllPermissions = () => {
+      browser.permissions.remove({ origins: [ '<all_urls>' ] }).then(removed => {
+        vm.refreshPermissions();
+        window.alert(browser.i18n.getMessage('removePermissionsSuccess'));
+      });
     };
 
   }]);
