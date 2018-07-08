@@ -1,5 +1,13 @@
 # Changelog
 
+### Version 2.0.1
+ - Removed '<all_urls>' from required permissions and changed to an optional permission.
+ - Fixed a bug in which ${inum} was counting checked items from disabled sources.
+ - Fixed a bug in which adding 1000+ downloads caused some downloads not to be added.
+ - Added variables for item, frame, and tab URL.
+ - Added split and replace filters. (OkanEsen)
+ - Added an option to save changes to popup controls immediately.
+
 ### Version 2.0.0
  - Rewrote the majority of the addon.
  - Made interface work properly when width is fixed in overflow menu.
