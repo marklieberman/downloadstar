@@ -34,7 +34,6 @@ i18nModule.directive('i18nTitle', [
             element[0].setAttribute('title', browser.i18n.getMessage(value));
           }
         });
-
       }
     };
 }]);
@@ -53,7 +52,6 @@ i18nModule.directive('i18nPlaceholder', [
             element[0].setAttribute('placeholder', browser.i18n.getMessage(value));
           }
         });
-
       }
     };
 }]);
