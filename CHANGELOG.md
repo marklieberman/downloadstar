@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 2.0.2
+ - Fixed a bug where invalid escape codes in a URL caused no media to be found.
+
 ### Version 2.0.1
  - Removed '<all_urls>' from required permissions and changed to an optional permission.
  - Fixed a bug in which ${inum} was counting checked items from disabled sources.

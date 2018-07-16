@@ -1,6 +1,6 @@
 {
   "name": "downloadstar",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Download all items in a webpage that match a pattern",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
