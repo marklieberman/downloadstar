@@ -52,7 +52,7 @@
     "message": "Toggle regular expression mode"
   },
   "fastFilterClearTitle": {
-    "message": "Clear fast filer"
+    "message": "Clear fast filter"
   },
   "errorFastFilterNotRegex": {
     "message": "Not a valid regular expression."
