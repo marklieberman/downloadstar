@@ -165,8 +165,5 @@ var media = {
   })
 };
 
-// Sort the media by URL.
-media.items.sort((a, b) => a.url.localeCompare(b.url));
-
 // Return value for executeScript().
 media; // jshint ignore:line

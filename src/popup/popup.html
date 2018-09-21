@@ -368,6 +368,15 @@
               <i class="fa fa-clipboard-check"></i>
             </button>
           </div>
+          <!-- toggle sorting URLs -->
+          <div class="btn-group sort-toggle">
+            <button class="btn btn-outline-secondary btn-sm toggle-sort" type="button"
+                    ng-class="{ 'active': vm.controls.sortUrls }"
+                    ng-click="vm.toggleSortUrls()"
+                    i18n-title="'sortUrlsTitle'">
+              <i class="fa fa-sort-alpha-down"></i>
+            </button>
+          </div>
           <!-- quick search -->
           <div class="input-group input-group-sm quick-search">
             <div class="input-group-prepend">
