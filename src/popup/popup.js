@@ -998,7 +998,7 @@ app.controller('PopupCtrl', [
     };
 
     /**
-     * Update listed MediaItems by sorting as needed and re-evaulating masks
+     * Update listed MediaItems by sorting if desired and re-evaluating masks
      */
     vm.updateMediaList = () => {
       if (vm.controls.sortUrls) {
@@ -1191,7 +1191,7 @@ app.controller('PopupCtrl', [
     };
 
     /**
-     * Toggle sorting MediaItems alphabetically by URL.
+     * Toggle sorting MediaItems alphabetically by URL or keeping DOM order.
      */
     vm.toggleSortUrls = function () {
       vm.controls.sortUrls = !vm.controls.sortUrls;
