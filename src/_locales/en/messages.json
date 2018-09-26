@@ -129,6 +129,9 @@
   "onlyCheckedItemsTitle": {
     "message": "Show only checked items"
   },
+  "sortUrlsTitle": {
+    "message": "Sort items alphabetically by URL"
+  },
   "quickSearchPlaceholder": {
     "message": "Quick search"
   },

@@ -208,7 +208,7 @@ form {
   flex-flow: row nowrap;
   justify-content: flex-start;
 
-  .source-select {
+  .source-select, .sort-toggle {
     flex: 0 1 auto;
     margin-right: 5px;
   }

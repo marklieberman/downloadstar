@@ -799,6 +799,7 @@ app.controller('PopupCtrl', [
     // ----- Controller init -----
     vm.scraping = true;
     vm.media = [];
+    vm.unsortedMedia = [];
     vm.mediaFilters = MediaFilters;
     vm.lastClickedItem = null;
     vm.watchControls = false;
@@ -817,7 +818,8 @@ app.controller('PopupCtrl', [
       namingMask: '',
       conflictAction: 'skip',
       eraseHistory: false,
-      checkedOnly: false
+      checkedOnly: false,
+      sortUrls: false
     };
 
     // Use a bit of defineProperty magic to bind a simple hash of { filterType: enabled } to the enabled property of
@@ -945,8 +947,8 @@ app.controller('PopupCtrl', [
       // Put the scraped media on the controller if requested.
       return !assign ? promise : promise
         .then(media => {
-          vm.media = media;
-          vm.evaluateNamingMask(vm.getVisibleMediaItems());
+          vm.unsortedMedia = media;
+          vm.updateMediaList();
         })
         .finally(() => vm.scraping = false);
     };
@@ -988,11 +990,24 @@ app.controller('PopupCtrl', [
         // Put the scraped media on the controller if requested.
         return !assign ? promise : promise
           .then(media => {
-            vm.media = media;
-            vm.evaluateNamingMask(vm.getVisibleMediaItems());
+            vm.unsortedMedia = media;
+            vm.updateMediaList();
           })
           .finally(() => vm.scraping = false);
       });
+    };
+
+    /**
+     * Update listed MediaItems by sorting if desired and re-evaluating masks
+     */
+    vm.updateMediaList = () => {
+      if (vm.controls.sortUrls) {
+        vm.media = vm.unsortedMedia.slice().sort((a, b) => a.getUrl().localeCompare(b.getUrl()));
+      } else {
+        vm.media = vm.unsortedMedia;
+      }
+
+      vm.evaluateNamingMask(vm.getVisibleMediaItems());
     };
 
     /**
@@ -1173,6 +1188,15 @@ app.controller('PopupCtrl', [
     vm.toggleMediaSource = function (source) {
       vm.controls.sources[source] = !vm.controls.sources[source];
       vm.evaluateNamingMask(vm.getVisibleMediaItems());
+    };
+
+    /**
+     * Toggle sorting MediaItems alphabetically by URL or keeping DOM order.
+     */
+    vm.toggleSortUrls = function () {
+      vm.controls.sortUrls = !vm.controls.sortUrls;
+
+      vm.updateMediaList();
     };
 
     /**
