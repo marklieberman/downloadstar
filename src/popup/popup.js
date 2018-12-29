@@ -1246,6 +1246,9 @@ app.controller('PopupCtrl', [
      * Download the checked MediaItems.
      */
     vm.downloadMediaItems = () => {
+      // Re-evaluate naming masks before proceeding.
+      vm.evaluateNamingMask(vm.getVisibleMediaItems());
+
       // Save the interface controls before proceeding.
       saveControls().then(() => {
         browser.runtime.sendMessage({
