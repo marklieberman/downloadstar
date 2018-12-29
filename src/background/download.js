@@ -35,7 +35,7 @@ class QueueItem {
     this.finish = null;
 
     // Generate the target path for this item.
-    this.targetPath = [ data.options.downloadPath, this.getFilename() ]
+    this.targetPath = [ this.getFoldername(), this.getFilename() ]
       .filter(part => !!part)
       .join('/');
   }
@@ -59,6 +59,13 @@ class QueueItem {
    */
   getFilename () {
     return this.mediaItem.filename;
+  }
+
+  /**
+   * Get the folder name.
+   */
+  getFoldername () {
+    return this.mediaItem.foldername;
   }
 
   /**

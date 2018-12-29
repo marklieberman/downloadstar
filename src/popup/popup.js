@@ -314,6 +314,7 @@ app.factory('MediaItem', [
       this.matches = [];
       this.checked = false;
       this.maskName = null;
+      this.maskNameFolder = null;
     }
 
     /**
@@ -1056,6 +1057,7 @@ app.controller('PopupCtrl', [
 
       // Get an instance of NamingMask for this mask expression.
       let namingMask = new NamingMask(vm.controls.namingMask);
+      let namingMaskFolder = new NamingMask(vm.controls.downloadPath);
 
       // Expose the error if the mask expression is not valid.
       vm.namingMaskError = namingMask.error;
@@ -1063,6 +1065,7 @@ app.controller('PopupCtrl', [
       // Evaluate the mask expression on each MediaItem.
       mediaItems.forEach(mediaItem => {
         mediaItem.maskName = namingMask.evaluate(mediaItem);
+        mediaItem.maskNameFolder = namingMaskFolder.evaluate(mediaItem);
       });
     };
 
@@ -1239,7 +1242,8 @@ app.controller('PopupCtrl', [
             },
             mediaItems: vm.getCheckedMediaItems().map(mediaItem => ({
               url: mediaItem.getUrl(),
-              filename: mediaItem.maskName || mediaItem.getFilename()
+              filename: mediaItem.maskName || mediaItem.getFilename(),
+              foldername: mediaItem.maskNameFolder || 'DownloadStar',
             }))
           }
         });
