@@ -318,10 +318,17 @@ app.factory('MediaItem', [
     }
 
     /**
-     * Remove illegal characters for a Windows path.
+     * Remove illegal characters for a Windows path (file).
      */
     MediaItem.cleanPath = function (input) {
-      return input.replace(/[\\/:"*?<>|]+/gi, '');
+      return input.replace(/[\\/:"*?<>|]+/gi, ' ');
+    };
+
+    /**
+     * Remove illegal characters for a Windows path (folder).
+     */
+    MediaItem.cleanPathFolder = function (input) {
+      return input.split(/[\\/]+/).map(segment => segment.replace(/[:"*?<>|]+/gi, ' ')).filter(segment => segment.trim()).join('/');
     };
 
     /**
@@ -779,6 +786,15 @@ app.factory('NamingMask', [
       }, ''));
     };
 
+    /**
+     * Evaluate the naming mask (folder) for a MediaItem.
+     */
+    NamingMask.prototype.evaluateFolder = function (mediaItem) {
+      return MediaItem.cleanPathFolder(this.tokens.reduce((output, token) => {
+        return output + (angular.isString(token) ? token : token(mediaItem));
+      }, ''));
+    };
+
     return NamingMask;
 
   }]);
@@ -1065,7 +1081,7 @@ app.controller('PopupCtrl', [
       // Evaluate the mask expression on each MediaItem.
       mediaItems.forEach(mediaItem => {
         mediaItem.maskName = namingMask.evaluate(mediaItem);
-        mediaItem.maskNameFolder = namingMaskFolder.evaluate(mediaItem);
+        mediaItem.maskNameFolder = namingMaskFolder.evaluateFolder(mediaItem);
       });
     };
 
