@@ -296,6 +296,8 @@ app.factory('MediaItem', [
       this.url = new URL(data.url);
       this.tabUrl = data.tabUrl;
       this.frameUrl = data.frameUrl;
+      this.tabTitle = data.tabTitle;
+      this.frameTitle = data.frameTitle;
       this.mime = data.mime;
       this.tag = data.tag;
 
@@ -490,6 +492,10 @@ app.factory('NamingMask', [
       tabUrl: function (mediaItem) {
         return NamingMask.urlAsVariable(mediaItem.tabUrl, this.parameter);
       },
+      // title of the frame in which the MediaItem was found.
+      frameTitle: (mediaItem) => mediaItem.frameTitle,
+      // title of the tab in which the MediaItem was found.
+      tabTitle: (mediaItem) => mediaItem.tabTitle,
       // -- Dynamic or stateful variables.
       // An auto-incrementing number.
       inum: function (mediaItem) {
@@ -937,14 +943,18 @@ app.controller('PopupCtrl', [
           // Find the top frame to determinate the tab URL.
           let topFrame = frames.find(frame => frame.meta.topFrame);
           let tabUrl = new URL(topFrame.meta.frameUrl);
+          let tabTitle = topFrame.meta.title;
 
           // Construct MediaItem instances from the scraped items in each frame.
           let mediaItems = frames.reduce((media, frame) => {
             let frameUrl = new URL(frame.meta.frameUrl);
+            let frameTitle = frame.meta.title;
             for (let i = 0; i < frame.items.length; i++) {
               media.push(new MediaItem(angular.extend(frame.items[i], {
                 tabUrl,
-                frameUrl
+                frameUrl,
+                tabTitle,
+                frameTitle,
               })));
             }
             return media;
