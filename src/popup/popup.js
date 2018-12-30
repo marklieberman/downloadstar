@@ -330,7 +330,11 @@ app.factory('MediaItem', [
      * Remove illegal characters for a Windows path (folder).
      */
     MediaItem.cleanPathFolder = function (input) {
-      return input.split(/[\\/]+/).map(segment => segment.replace(/[:"*?<>|]+/gi, ' ').trim()).filter(segment => segment).join('/');
+      return input
+        .split(/[\\/]+/)
+        .map(part => part.replace(/[:"*?<>|]+/gi, ' ').trim())
+        .filter(part => !!part)
+        .join('/');
     };
 
     /**
