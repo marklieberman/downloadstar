@@ -37,16 +37,16 @@ function getNearbyText (element) {
 function getMediaAndLinks () {
   return Array.concat(
     // Collect the target of links.
-    Array.from(document.getElementsByTagName('a'), a => {
+    Array.from(getLinkElements(), link => {
       return {
         source: 'link',
-        url: tryDecodeURI(a.href),
+        url: tryDecodeURI(link.href),
         mime: null,
-        tag: a.tagName,
-        alt: a.alt || null,
-        title: a.title || null,
-        text: getNearbyText(a),
-        download: a.download || null
+        tag: link.tagName,
+        alt: link.alt || null,
+        title: link.title || null,
+        text: getNearbyText(link),
+        download: link.download || null
       };
     }),
     // Collect the source of images.
@@ -63,6 +63,13 @@ function getMediaAndLinks () {
         height: img.naturalHeight
       };
     })
+  );
+}
+
+function getLinkElements () {
+  return Array.concat(
+    Array.from(document.getElementsByTagName('a')),
+    Array.from(document.getElementsByTagName('area'))
   );
 }
 
