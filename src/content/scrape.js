@@ -150,7 +150,8 @@ function getLinksFromText () {
  * Extract the title of the document.
  */
 function getTitle () {
-  return document.title;
+  // Get document title, and remove illegal characters for a Windows path
+  return document.title.replace(/[\\/:"*?<>|]/gi, ' ');
 }
 
 // Collect the media from this tab.
