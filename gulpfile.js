@@ -32,6 +32,8 @@ var sources = {
 
 gulp.task('default', [ 'copy', 'lint', 'jsonlint', 'sass', 'watch' ]);
 
+gulp.task('travis', [ 'copy', 'lint', 'jsonlint', 'sass' ]);
+
 gulp.task('watch', function () {
   gulp.watch(sources.js, [ 'lint' ]);
   gulp.watch(sources.json, [ 'jsonlint' ]);
