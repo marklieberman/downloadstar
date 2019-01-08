@@ -1,0 +1,7 @@
+language: node_js
+node_js: "lts/*"
+
+before_script:
+  - npm install package.json
+script:
+  - gulp travis
