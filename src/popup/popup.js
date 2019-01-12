@@ -296,6 +296,8 @@ app.factory('MediaItem', [
       this.url = new URL(data.url);
       this.tabUrl = data.tabUrl;
       this.frameUrl = data.frameUrl;
+      this.tabTitle = data.tabTitle;
+      this.frameTitle = data.frameTitle;
       this.mime = data.mime;
       this.tag = data.tag;
 
@@ -314,13 +316,25 @@ app.factory('MediaItem', [
       this.matches = [];
       this.checked = false;
       this.maskName = null;
+      this.maskNameFolder = null;
     }
 
     /**
-     * Remove illegal characters for a Windows path.
+     * Remove illegal characters for a Windows path (file).
      */
     MediaItem.cleanPath = function (input) {
-      return input.replace(/[\\/:"*?<>|]+/gi, '');
+      return input.replace(/[\\/:"*?<>|]/gi, ' ');
+    };
+
+    /**
+     * Remove illegal characters for a Windows path (folder).
+     */
+    MediaItem.cleanPathFolder = function (input) {
+      return input
+        .split(/[\\/]+/)
+        .map(part => part.replace(/[:"*?<>|]/gi, ' ').trim())
+        .filter(part => !!part)
+        .join('/');
     };
 
     /**
@@ -482,6 +496,10 @@ app.factory('NamingMask', [
       tabUrl: function (mediaItem) {
         return NamingMask.urlAsVariable(mediaItem.tabUrl, this.parameter);
       },
+      // title of the frame in which the MediaItem was found.
+      frameTitle: (mediaItem) => mediaItem.frameTitle,
+      // title of the tab in which the MediaItem was found.
+      tabTitle: (mediaItem) => mediaItem.tabTitle,
       // -- Dynamic or stateful variables.
       // An auto-incrementing number.
       inum: function (mediaItem) {
@@ -778,6 +796,15 @@ app.factory('NamingMask', [
       }, ''));
     };
 
+    /**
+     * Evaluate the naming mask (folder) for a MediaItem.
+     */
+    NamingMask.prototype.evaluateFolder = function (mediaItem) {
+      return MediaItem.cleanPathFolder(this.tokens.reduce((output, token) => {
+        return output + (angular.isString(token) ? token : token(mediaItem));
+      }, ''));
+    };
+
     return NamingMask;
 
   }]);
@@ -920,14 +947,18 @@ app.controller('PopupCtrl', [
           // Find the top frame to determinate the tab URL.
           let topFrame = frames.find(frame => frame.meta.topFrame);
           let tabUrl = new URL(topFrame.meta.frameUrl);
+          let tabTitle = topFrame.meta.title;
 
           // Construct MediaItem instances from the scraped items in each frame.
           let mediaItems = frames.reduce((media, frame) => {
             let frameUrl = new URL(frame.meta.frameUrl);
+            let frameTitle = frame.meta.title;
             for (let i = 0; i < frame.items.length; i++) {
               media.push(new MediaItem(angular.extend(frame.items[i], {
                 tabUrl,
-                frameUrl
+                frameUrl,
+                tabTitle,
+                frameTitle,
               })));
             }
             return media;
@@ -1056,6 +1087,7 @@ app.controller('PopupCtrl', [
 
       // Get an instance of NamingMask for this mask expression.
       let namingMask = new NamingMask(vm.controls.namingMask);
+      let namingMaskFolder = new NamingMask(vm.controls.downloadPath);
 
       // Expose the error if the mask expression is not valid.
       vm.namingMaskError = namingMask.error;
@@ -1063,6 +1095,7 @@ app.controller('PopupCtrl', [
       // Evaluate the mask expression on each MediaItem.
       mediaItems.forEach(mediaItem => {
         mediaItem.maskName = namingMask.evaluate(mediaItem);
+        mediaItem.maskNameFolder = namingMaskFolder.evaluateFolder(mediaItem);
       });
     };
 
@@ -1227,6 +1260,9 @@ app.controller('PopupCtrl', [
      * Download the checked MediaItems.
      */
     vm.downloadMediaItems = () => {
+      // Re-evaluate naming masks before proceeding.
+      vm.evaluateNamingMask(vm.getVisibleMediaItems());
+
       // Save the interface controls before proceeding.
       saveControls().then(() => {
         browser.runtime.sendMessage({
@@ -1239,7 +1275,8 @@ app.controller('PopupCtrl', [
             },
             mediaItems: vm.getCheckedMediaItems().map(mediaItem => ({
               url: mediaItem.getUrl(),
-              filename: mediaItem.maskName || mediaItem.getFilename()
+              filename: mediaItem.maskName || mediaItem.getFilename(),
+              foldername: mediaItem.maskNameFolder || 'DownloadStar',
             }))
           }
         });

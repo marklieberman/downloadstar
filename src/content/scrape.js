@@ -153,12 +153,21 @@ function getLinksFromText () {
   return media;
 }
 
+/**
+ * Extract the title of the document.
+ */
+function getTitle () {
+  // Get document title, and remove illegal characters for a Windows path
+  return document.title.replace(/[\\/:"*?<>|]/gi, ' ');
+}
+
 // Collect the media from this tab.
 var duplicates = new Set();
 var media = {
   meta: {
     frameUrl: String(window.location),
-    topFrame: (window.top === window)
+    topFrame: (window.top === window),
+    title: getTitle(),
   },
   items: Array.concat(getMediaAndLinks(), getAudioVideoMedia(), getLinksFromText()).filter(item => {
     // Eliminate invalid URLs.
