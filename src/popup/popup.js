@@ -925,7 +925,12 @@ app.controller('PopupCtrl', [
     function saveControls () {
       return browser.storage.local.set({
         controls: vm.controls,
-        filters: vm.filters
+        // Undo the defineProperty magic before saving since it seems to be incompatible with the new storage backend.
+        // See #71.
+        filters: Object.keys(vm.filters).reduce((filters, key) => {
+          filters[key] = vm.filters[key];
+          return filters;
+        }, {})
       });
     }
 
