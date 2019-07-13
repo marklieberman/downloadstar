@@ -322,7 +322,7 @@
                 </td>
                 <!-- media thumbnail column -->
                 <td class="media-thumb">
-                  <img ng-if="item.isImage()"
+                  <img ng-if="vm.controls.showImagePreview && item.isImage()"
                        ng-src="{{::item.getUrl()}}"
                        remove-on-error></img>
                   <video ng-if="item.isVideo()"
@@ -360,8 +360,8 @@
             </button>
           </div>
           <!-- show checked only -->
-          <div class="btn-group source-select">
-            <button class="btn btn-outline-secondary btn-sm checked-only" type="button"
+          <div class="btn-group checked-only">
+            <button class="btn btn-outline-secondary btn-sm" type="button"
                     ng-class="{ 'active': vm.controls.checkedOnly }"
                     ng-click="vm.controls.checkedOnly = !vm.controls.checkedOnly"
                     i18n-title="'onlyCheckedItemsTitle'">
@@ -369,12 +369,21 @@
             </button>
           </div>
           <!-- toggle sorting URLs -->
-          <div class="btn-group sort-toggle">
-            <button class="btn btn-outline-secondary btn-sm toggle-sort" type="button"
+          <div class="btn-group toggle-sort">
+            <button class="btn btn-outline-secondary btn-sm" type="button"
                     ng-class="{ 'active': vm.controls.sortUrls }"
                     ng-click="vm.toggleSortUrls()"
                     i18n-title="'sortUrlsTitle'">
               <i class="fa fa-sort-alpha-down"></i>
+            </button>
+          </div>
+          <!-- show image preview -->
+          <div class="btn-group toggle-image-preview">
+            <button class="btn btn-outline-secondary btn-sm" type="button"
+                    ng-class="{ 'active': vm.controls.showImagePreview }"
+                    ng-click="vm.controls.showImagePreview = !vm.controls.showImagePreview"
+                    i18n-title="'showImagePreviewTitle'">
+              <i class="fa fa-image"></i>
             </button>
           </div>
           <!-- quick search -->

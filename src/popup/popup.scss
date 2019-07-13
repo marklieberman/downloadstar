@@ -1,3 +1,12 @@
+[ng\:cloak],
+[ng-cloak],
+[data-ng-cloak],
+[x-ng-cloak],
+.ng-cloak,
+.x-ng-cloak {
+    display: none !important;
+}
+
 /* import custom bootstrap 4 */
 @import "../common/bootstrap-popup";
 
@@ -208,12 +217,15 @@ form {
   flex-flow: row nowrap;
   justify-content: flex-start;
 
-  .source-select, .sort-toggle {
+  .source-select,
+  .btn-group.checked-only,
+  .btn-group.toggle-sort,
+  .btn-group.toggle-image-preview {
     flex: 0 1 auto;
     margin-right: 5px;
   }
 
-  .quick-search {
+  .input-group.quick-search {
     flex: 0 1 auto;
     max-width: 240px;
   }
@@ -223,8 +235,4 @@ form {
     text-align: right;
     margin-left: 5px;
   }
-}
-
-[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
-    display: none !important;
 }

@@ -846,7 +846,8 @@ app.controller('PopupCtrl', [
       conflictAction: 'skip',
       eraseHistory: false,
       checkedOnly: false,
-      sortUrls: false
+      sortUrls: false,
+      showImagePreview: false
     };
 
     // Use a bit of defineProperty magic to bind a simple hash of { filterType: enabled } to the enabled property of

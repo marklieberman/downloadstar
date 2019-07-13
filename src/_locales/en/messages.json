@@ -185,5 +185,8 @@
   },
   "needAllUrlsPermission": {
     "message": "Download Star requires additional permissions to scrape all tabs. Please enable this feature in the addon options by clicking on \"Allow the addon to scrape links and media in any tab\" under the Optional Permissions heading."
+  },
+  "showImagePreviewTitle": {
+    "message": "Show thumbnail for image items"
   }
 }
