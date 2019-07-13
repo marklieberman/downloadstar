@@ -35,7 +35,7 @@ function getNearbyText (element) {
  * Extract the URls for other media in various tags.
  */
 function getMediaAndLinks () {
-  return Array.concat(
+  return [].concat(
     // Collect the target of links.
     Array.from(getLinkElements(), link => {
       return {
@@ -67,7 +67,7 @@ function getMediaAndLinks () {
 }
 
 function getLinkElements () {
-  return Array.concat(
+  return [].concat(
     Array.from(document.getElementsByTagName('a')),
     Array.from(document.getElementsByTagName('area'))
   );
@@ -77,7 +77,7 @@ function getLinkElements () {
  * Extract the sources from audio/video/object tags.
  */
 function getAudioVideoMedia () {
-  return Array.concat(
+  return [].concat(
     Array.from(document.getElementsByTagName('audio')),
     Array.from(document.getElementsByTagName('video')),
     Array.from(document.getElementsByTagName('object')),
@@ -169,7 +169,7 @@ var media = {
     topFrame: (window.top === window),
     title: getTitle(),
   },
-  items: Array.concat(getMediaAndLinks(), getAudioVideoMedia(), getLinksFromText()).filter(item => {
+  items: [].concat(getMediaAndLinks(), getAudioVideoMedia(), getLinksFromText()).filter(item => {
     // Eliminate invalid URLs.
     // Eliminate duplicate URLs on first encountered basis.
     if (!isValidUrl(item.url) || duplicates.has(item.url)) {
