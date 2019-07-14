@@ -167,7 +167,10 @@ class QueueItem {
    * True if the given filename does not end with the original filename, otherwise false
    */
   wasRenamed (filename) {
-    return !filename.endsWith(this.mediaItem.filename);
+    // Path seperators get swapped on different systems, / or \\ so only compare the filenames.
+    let asDownloaded = filename.replace(/[\\\/]+/g, '');
+    let asInitially = this.mediaItem.filename.replace(/[\\\/]+/g, '');
+    return !asDownloaded.endsWith(asInitially);
   }
 
   /**
