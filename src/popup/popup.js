@@ -557,7 +557,9 @@ app.factory('NamingMask', [
           // Replace all instances of search.
           return input.split(search).join(replace);
         }
-      }
+      },
+      // Remove forward slashes from the input.
+      noFolder: (input = '') => input.replace(/\/+/g, '_')
     };
 
     /**
