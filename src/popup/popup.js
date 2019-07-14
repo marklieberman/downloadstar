@@ -316,25 +316,19 @@ app.factory('MediaItem', [
       this.matches = [];
       this.checked = false;
       this.maskName = null;
-      this.maskNameFolder = null;
     }
 
     /**
      * Remove illegal characters for a Windows path (file).
      */
-    MediaItem.cleanPath = function (input) {
-      return input.replace(/[\\/:"*?<>|]/gi, ' ');
-    };
-
-    /**
-     * Remove illegal characters for a Windows path (folder).
-     */
-    MediaItem.cleanPathFolder = function (input) {
-      return input
-        .split(/[\\/]+/)
-        .map(part => part.replace(/[:"*?<>|]/gi, ' ').trim())
-        .filter(part => !!part)
-        .join('/');
+    MediaItem.sanitizePath = function (path) {
+      let pathParts = path.split('/'), basename = pathParts.pop();
+      return [
+        // Sanitize the path parts.
+        ...(pathParts.map(part => part.replace(/[:"*?<>|]/gi, '_'))),
+        // Sanitize the basename.
+        basename.replace(/[\\/:"*?<>|]/gi, '_')
+      ].join('/');
     };
 
     /**
@@ -347,8 +341,8 @@ app.factory('MediaItem', [
         let match;
         if ((match = /\b([^\/]+)\.([a-z0-9]+)(\?|#|$)/i.exec(input)) !== null) {
           if (match[1] && match[2]) {
-            mediaItem.filename = MediaItem.cleanPath(match[1]);
-            mediaItem.extension = MediaItem.cleanPath(match[2]);
+            mediaItem.filename = match[1];
+            mediaItem.extension = match[2];
             mediaItem.isFilenameInUrl = true;
             mediaItem.isExtensionInUrl = true;
             return true;
@@ -362,7 +356,7 @@ app.factory('MediaItem', [
         let match;
         if ((match = /\/([^\/]+)\/?(\?|#|$)/i.exec(input)) !== null) {
           if (match[1]) {
-            mediaItem.filename = MediaItem.cleanPath(match[1]);
+            mediaItem.filename = match[1];
             mediaItem.extension = MediaFilters.mimeToExtMap[mediaItem.mime] || 'html';
             mediaItem.isFilenameInUrl = true;
             return true;
@@ -556,7 +550,13 @@ app.factory('NamingMask', [
         } catch (error) {
           return 'BADREGEX';
         }
-        return input.replace(search, replace);
+        if (search instanceof RegExp) {
+          // Global regex replaces all instances.
+          return input.replace(search, replace);
+        } else {
+          // Replace all instances of search.
+          return input.split(search).join(replace);
+        }
       }
     };
 
@@ -590,7 +590,8 @@ app.factory('NamingMask', [
           case '\\':
             // Ignore the following special character.
             escaped = true;
-            break;
+            token += c;
+            continue;
           case '/':
             // Start or end of a regular expression.
             if (!escaped) {
@@ -661,6 +662,11 @@ app.factory('NamingMask', [
      * Convert a string enclosed by forward-slashes to a regular expression.
      */
     NamingMask.asStringOrRegex = function (search) {
+      // If the "start of regex" slash is escaped, assume the search term is a string.
+      if (search.startsWith('\\/')) {
+        // Discard the escaping backlash.
+        return search.slice(1);
+      } else
       if (search.startsWith('/')) {
         let index = search.lastIndexOf('/');
         if (!!~index && (index !== 0)) {
@@ -704,9 +710,12 @@ app.factory('NamingMask', [
      */
     NamingMask.prototype.compile = function (expression) {
       // Tokenize the expression by splitting on ${} variables.
+      this.staticMask = true;
       const tokenRegex = /\$\{([^}]+)\}/ig;
       let match, index = 0;
       while ((match = tokenRegex.exec(expression)) !== null) {
+        this.staticMask = false;
+
         // Extract any static content before the variable.
         if (index != match.index) {
           this.tokens.push(expression.substring(index, match.index));
@@ -788,21 +797,12 @@ app.factory('NamingMask', [
     };
 
     /**
-     * Evaluate the naming mask for a MediaItem.
+     * Evaluate the naming mask.
      */
     NamingMask.prototype.evaluate = function (mediaItem) {
-      return MediaItem.cleanPath(this.tokens.reduce((output, token) => {
+      return this.tokens.reduce((output, token) => {
         return output + (angular.isString(token) ? token : token(mediaItem));
-      }, ''));
-    };
-
-    /**
-     * Evaluate the naming mask (folder) for a MediaItem.
-     */
-    NamingMask.prototype.evaluateFolder = function (mediaItem) {
-      return MediaItem.cleanPathFolder(this.tokens.reduce((output, token) => {
-        return output + (angular.isString(token) ? token : token(mediaItem));
-      }, ''));
+      }, '');
     };
 
     return NamingMask;
@@ -1091,17 +1091,12 @@ app.controller('PopupCtrl', [
     vm.evaluateNamingMask = (mediaItems) => {
       mediaItems = mediaItems || vm.media;
 
-      // Get an instance of NamingMask for this mask expression.
-      let namingMask = new NamingMask(vm.controls.namingMask);
-      let namingMaskFolder = new NamingMask(vm.controls.downloadPath);
-
-      // Expose the error if the mask expression is not valid.
-      vm.namingMaskError = namingMask.error;
+      // Compile naming masks for the folder and file expressions.
+      vm.namingMask = new NamingMask(vm.controls.namingMask);
 
       // Evaluate the mask expression on each MediaItem.
       mediaItems.forEach(mediaItem => {
-        mediaItem.maskName = namingMask.evaluate(mediaItem);
-        mediaItem.maskNameFolder = namingMaskFolder.evaluateFolder(mediaItem);
+        mediaItem.maskName = MediaItem.sanitizePath(vm.namingMask.evaluate(mediaItem));
       });
     };
 
@@ -1234,7 +1229,6 @@ app.controller('PopupCtrl', [
      */
     vm.toggleSortUrls = function () {
       vm.controls.sortUrls = !vm.controls.sortUrls;
-
       vm.updateMediaList();
     };
 
@@ -1251,6 +1245,11 @@ app.controller('PopupCtrl', [
     vm.canProceedToDownload = () => {
       // Download location must be a relative path.
       if (vm.isDownloadPathAbsolute()) {
+        return false;
+      }
+
+      // Naming masks must not have any errors.
+      if (vm.namingMask && vm.namingMask.error) {
         return false;
       }
 
@@ -1281,8 +1280,7 @@ app.controller('PopupCtrl', [
             },
             mediaItems: vm.getCheckedMediaItems().map(mediaItem => ({
               url: mediaItem.getUrl(),
-              filename: mediaItem.maskName || mediaItem.getFilename(),
-              foldername: mediaItem.maskNameFolder || 'DownloadStar',
+              filename: mediaItem.maskName || mediaItem.getFilename()
             }))
           }
         });

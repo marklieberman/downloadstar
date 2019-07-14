@@ -19,9 +19,10 @@
                     i18n="'downloadPathPrepend'"></span>
             </div>
             <input class="form-control download-location" type="text" name="downloadPath"
+                   ng-class="{ 'is-invalid': vm.isDownloadPathAbsolute() }"
                    ng-model="vm.controls.downloadPath"></input>
             <div class="input-group-append">
-              <!-- bgein download button -->
+              <!-- begin download button -->
               <button class="btn btn-dark begin-download"
                       ng-click="vm.downloadMediaItems()"
                       ng-disabled="!vm.canProceedToDownload()"
@@ -40,6 +41,7 @@
               </button>
             </div>
           </div>
+          <!-- download location error message -->
           <small class="text-danger"
                  ng-show="vm.isDownloadPathAbsolute()"
                  i18n="'errorDownloadPathMustBeRelative'"></small>
@@ -171,7 +173,7 @@
               </label>
               <div class="input-group input-group-sm">
                 <input class="form-control" type="text" name="namingMask"
-                       ng-class="{ 'is-invalid': vm.namingMaskError }"
+                       ng-class="{ 'is-invalid': vm.namingMask.error }"
                        ng-model="vm.controls.namingMask"
                        ng-model-options="{ debounce: 500 }"
                        ng-change="vm.evaluateNamingMask()"></input>
@@ -191,9 +193,10 @@
                   </button>
                 </div>
               </div>
+              <!-- naming mask error message -->
               <small class="text-danger"
-                      ng-show="vm.namingMaskError">
-                {{vm.namingMaskError}}
+                      ng-show="vm.namingMask.error">
+                {{vm.namingMask.error}}
               </small>
             </div>
           </div>
@@ -296,7 +299,7 @@
                       {{::item.getFilename()}}
                     </span><!--
                     --><span class="badge badge-dark"
-                             ng-if="item.maskName">
+                             ng-if="vm.controls.namingMask">
                       {{item.maskName}}
                     </span>
                   </div>
@@ -325,7 +328,7 @@
                   <img ng-if="vm.controls.showImagePreview && item.isImage()"
                        ng-src="{{::item.getUrl()}}"
                        remove-on-error></img>
-                  <video ng-if="item.isVideo()"
+                  <video ng-if="vm.controls.showImagePreview && item.isVideo()"
                          ng-src="{{::item.getUrl()}}"
                          remove-on-error></video>
                 </td>

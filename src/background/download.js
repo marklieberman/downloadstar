@@ -35,8 +35,9 @@ class QueueItem {
     this.finish = null;
 
     // Generate the target path for this item.
-    this.targetPath = [ this.getFoldername(), this.getFilename() ]
-      .filter(part => !!part)
+    this.targetPath = [ data.options.downloadPath, this.mediaItem.filename ]
+      // Part is not null, empty, or blank.
+      .filter(part => part && !/^\s*$/.test(part))
       .join('/');
   }
 
@@ -59,13 +60,6 @@ class QueueItem {
    */
   getFilename () {
     return this.mediaItem.filename;
-  }
-
-  /**
-   * Get the folder name.
-   */
-  getFoldername () {
-    return this.mediaItem.foldername;
   }
 
   /**
