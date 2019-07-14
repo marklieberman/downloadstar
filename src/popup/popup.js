@@ -325,9 +325,13 @@ app.factory('MediaItem', [
       let pathParts = path.split('/'), basename = pathParts.pop();
       return [
         // Sanitize the path parts.
-        ...(pathParts.map(part => part.replace(/[:"*?<>|]/gi, '_'))),
+        ...(pathParts.map(part =>
+          part.replace(/[:"*?<>|]/gi, '_')
+              .replace(/^\./, '_'))
+        ),
         // Sanitize the basename.
         basename.replace(/[\\/:"*?<>|]/gi, '_')
+                .replace(/^\./, '_')
       ].join('/');
     };
 
@@ -1264,6 +1268,16 @@ app.controller('PopupCtrl', [
     };
 
     /**
+     * Sanitize the download path.
+     */
+    vm.getSanitizedDownloadPath = () => {
+      return vm.controls.downloadPath
+        .split('/')
+        .map(part => part.replace(/[:"*?<>|]/gi, '_').replace(/^\./, '_'))
+        .join('/');
+    };
+
+    /**
      * Download the checked MediaItems.
      */
     vm.downloadMediaItems = () => {
@@ -1276,7 +1290,7 @@ app.controller('PopupCtrl', [
           topic: 'ds-downloadMediaItems',
           data: {
             options: {
-              downloadPath: vm.controls.downloadPath,
+              downloadPath: vm.getSanitizedDownloadPath(),
               conflictAction: vm.controls.conflictAction,
               eraseHistory: vm.controls.eraseHistory,
             },
