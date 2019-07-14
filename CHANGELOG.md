@@ -1,5 +1,14 @@
 # Changelog
 
+### Version 2.0.3
+ - Disabled thumbnails by default and added a toggle in bottom of the popup.
+ - Added function noFolder to strip slashes from a variable.
+ - Added variables frameTitle and tabTitle. (tigregalis)
+ - Naming mask can be used to sort downloads into subfolders. (tigregalis)
+ - Fixed filename sanitization issues around naming mask.
+ - Fixed filters not saving due to changes in FF's storage backend.
+ - Fixed addon breaking due to use of deprecated Array.concat method.
+
 ### Version 2.0.2
  - Fixed a bug where invalid escape codes in a URL caused no media to be found.
 
