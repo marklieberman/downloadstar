@@ -345,8 +345,8 @@ app.factory('MediaItem', [
         let match;
         if ((match = /\b([^\/]+)\.([a-z0-9]+)(\?|#|$)/i.exec(input)) !== null) {
           if (match[1] && match[2]) {
-            mediaItem.filename = match[1];
-            mediaItem.extension = match[2];
+            mediaItem.filename = decodeURIComponent(match[1]);
+            mediaItem.extension = decodeURIComponent(match[2]);
             mediaItem.isFilenameInUrl = true;
             mediaItem.isExtensionInUrl = true;
             return true;
@@ -360,7 +360,7 @@ app.factory('MediaItem', [
         let match;
         if ((match = /\/([^\/]+)\/?(\?|#|$)/i.exec(input)) !== null) {
           if (match[1]) {
-            mediaItem.filename = match[1];
+            mediaItem.filename = decodeURIComponent(match[1]);
             mediaItem.extension = MediaFilters.mimeToExtMap[mediaItem.mime] || 'html';
             mediaItem.isFilenameInUrl = true;
             return true;
@@ -966,12 +966,16 @@ app.controller('PopupCtrl', [
             let frameUrl = new URL(frame.meta.frameUrl);
             let frameTitle = frame.meta.title;
             for (let i = 0; i < frame.items.length; i++) {
-              media.push(new MediaItem(angular.extend(frame.items[i], {
-                tabUrl,
-                frameUrl,
-                tabTitle,
-                frameTitle,
-              })));
+              try {
+                media.push(new MediaItem(angular.extend(frame.items[i], {
+                  tabUrl,
+                  frameUrl,
+                  tabTitle,
+                  frameTitle,
+                })));
+              } catch (e) {
+                console.log('could not parse URL for scraped item');
+              }
             }
             return media;
           }, []);

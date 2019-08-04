@@ -9,18 +9,6 @@ function isValidUrl (url) {
 }
 
 /**
- * Try to decode the URI. This can fail for invalid escape sequences.
- */
-function tryDecodeURI (url) {
-  try {
-    return decodeURI(url);
-  } catch (error) {
-    console.log('scraped bad URL', url, error);
-    return null;
-  }
-}
-
-/**
  * Get innertText of the element or parent node.
  */
 function getNearbyText (element) {
@@ -40,7 +28,7 @@ function getMediaAndLinks () {
     Array.from(getLinkElements(), link => {
       return {
         source: 'link',
-        url: tryDecodeURI(link.href),
+        url: link.href,
         mime: null,
         tag: link.tagName,
         alt: link.alt || null,
@@ -53,7 +41,7 @@ function getMediaAndLinks () {
     Array.from(document.getElementsByTagName('img'), img => {
       return {
         source: 'embed',
-        url: tryDecodeURI(img.src),
+        url: img.src,
         mime: 'image/unknown',
         tag: img.tagName,
         alt: img.alt || null,
@@ -88,7 +76,7 @@ function getAudioVideoMedia () {
     // Collect the sources defined for this audio/video element.
     let sources = Array.from(element.getElementsByTagName('source'), source => ({
       source: 'embed',
-      url: tryDecodeURI(source.src),
+      url: source.src,
       mime: source.type,
       tag: element.tagName,
       alt: element.alt || null,
@@ -105,7 +93,7 @@ function getAudioVideoMedia () {
     if (!sources.length || !sources.find(source => source.url === currentSrc)) {
       media.push({
         source: 'embed',
-        url: tryDecodeURI(currentSrc),
+        url: currentSrc,
         mime: null,
         tag: element.tagName,
         alt: element.alt || null,
@@ -145,7 +133,7 @@ function getLinksFromText () {
     while ((match = URL_REGEX.exec(treeWalker.currentNode.innerText)) !== null) {
       media.push({
         source: 'text',
-        url: tryDecodeURI(match[0])
+        url: match[0]
       });
     }
   }
