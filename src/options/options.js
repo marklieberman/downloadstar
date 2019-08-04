@@ -17,10 +17,11 @@ app.controller('OptionsCtrl', [
 
     // ----- Controller init -----
     vm.settings = {
-      watchControls: false,      // Watch controls for changes?
-      maxConcurrentDownloads: 4, // Maximum concurrent downloads.
-      keepHistory: 'always',     // Store download history?
-      maxHistory: 1000           // Maximum number of history entries.
+      watchControls: false,           // Watch controls for changes?
+      maxConcurrentDownloads: 4,      // Maximum concurrent downloads.
+      keepHistory: 'always',          // Store download history?
+      maxHistory: 1000,               // Maximum number of history entries.
+      browserActionPopupType: 'popup' // How to open the popup
     };
     vm.permissions = {
       origins: []
@@ -82,6 +83,23 @@ app.controller('OptionsCtrl', [
         vm.refreshPermissions();
         window.alert(browser.i18n.getMessage('removePermissionsSuccess'));
       });
+    };
+
+    /**
+     * Configure the method by which the popup is opened.
+     */
+    vm.reconfigurePopup = () => {
+      if (vm.settings.browserActionPopupType === 'popup') {
+        // Set the popup URL; the onClicked handler will not receive callbacks.
+        browser.browserAction.setPopup({
+          popup: '/popup/popup.html'
+        });
+      } else {
+        // Clear the popup URL; the onClicked handler to receive callbacks.
+        browser.browserAction.setPopup({
+          popup: ''
+        });
+      }
     };
 
   }]);

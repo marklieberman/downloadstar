@@ -188,5 +188,14 @@
   },
   "showImagePreviewTitle": {
     "message": "Show thumbnail for image items"
+  },
+  "browserActionPopupType": {
+    "message": "Open the Popup"
+  },
+  "popupTypePopup": {
+    "message": "Normally"
+  },
+  "popupTypeWindow": {
+    "message": "In a Window"
   }
 }

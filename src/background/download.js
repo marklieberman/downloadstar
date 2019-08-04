@@ -1,14 +1,15 @@
 'use strict';
 
 const state = {
-  concurrentDownloads: 0,    // Number of running downloads.
-  queue: []                  // Current queue of downloads.
+  concurrentDownloads: 0,         // Number of running downloads.
+  queue: []                       // Current queue of downloads.
 };
 
 const settings = {
-  maxConcurrentDownloads: 4, // Maximum concurrent downloads.
-  keepHistory: 'always',     // Store download history?
-  maxHistory: 1000           // Maximum number of history entries.
+  maxConcurrentDownloads: 4,      // Maximum concurrent downloads.
+  keepHistory: 'always',          // Store download history?
+  maxHistory: 1000,               // Maximum number of history entries.
+  browserActionPopupType: 'popup' // How to open the popup
 };
 
 // Initialize settings from local storage.
@@ -20,7 +21,7 @@ browser.storage.local.get(settings).then(results => {
   });
 });
 
-// Object model --------------------------------------------------------------------------------------------------------
+// Object Model --------------------------------------------------------------------------------------------------------
 
 /**
  * Model for items in the queue or history.
@@ -267,6 +268,29 @@ class QueueItem {
 }
 
 // Event Listeners -----------------------------------------------------------------------------------------------------
+
+/**
+ * Invoked when the browser action is clicked.
+ */
+browser.browserAction.onClicked.addListener(tab => {
+  switch (settings.browserActionPopupType) {
+    case 'popup':
+      // We will not get subsequent callbacks in this listener after the popup is defined.
+      // The options must clear the popup URL when setting is changed.
+      browser.browserAction.setPopup({
+        popup: 'popup/popup.html'
+      });
+      browser.browserAction.openPopup();
+      break;
+    case 'window':
+      browser.windows.create({
+        allowScriptsToClose: true,
+        type: 'panel',
+        url: 'popup/popup.html'
+      });
+      break;
+  }
+});
 
 /**
  * Invoked when settings are changed.

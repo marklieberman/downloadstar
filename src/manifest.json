@@ -32,8 +32,7 @@
   "browser_action": {
     "browser_style": false,
     "default_icon": "icons/icon.svg",
-    "default_title": "Download Star",
-    "default_popup": "popup/popup.html"
+    "default_title": "Download Star"
   },
 
   "background": {
