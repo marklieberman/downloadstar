@@ -190,12 +190,12 @@
     "message": "Show thumbnail for image items"
   },
   "browserActionPopupType": {
-    "message": "Open the Popup"
+    "message": "Open Download Star In"
   },
   "popupTypePopup": {
-    "message": "Normally"
+    "message": "A Popup"
   },
   "popupTypeWindow": {
-    "message": "In a Window"
+    "message": "A Window"
   }
 }

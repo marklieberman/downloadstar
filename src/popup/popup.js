@@ -867,10 +867,15 @@ app.controller('PopupCtrl', [
       });
     });
 
+    // Configure the popup from any supplied URL parameters.
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('inWindow')) {
+      document.body.classList.add('in-window');
+    }
+
     // Initialize the controls.
     loadControls().then(() => {
       // Begin scraping the active tab or requested tab.
-      var urlParams = new URLSearchParams(window.location.search);
       var scrapeTabId = urlParams.get('scrapeTabId');
       var tabId = (scrapeTabId !== null) ? Number(scrapeTabId) : null;
       vm.scrapeTab(tabId, true);
