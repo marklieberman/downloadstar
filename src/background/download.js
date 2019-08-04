@@ -285,8 +285,8 @@ browser.browserAction.onClicked.addListener(tab => {
     case 'window':
       browser.windows.create({
         allowScriptsToClose: true,
-        type: 'panel',
-        url: 'popup/popup.html'
+        type: 'popup',
+        url: 'popup/popup.html?scrapeTabId=' + tab.id
       });
       break;
   }

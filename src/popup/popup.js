@@ -869,8 +869,11 @@ app.controller('PopupCtrl', [
 
     // Initialize the controls.
     loadControls().then(() => {
-      // Begin scraping the active tab.
-      vm.scrapeTab({}, true);
+      // Begin scraping the active tab or requested tab.
+      var urlParams = new URLSearchParams(window.location.search);
+      var scrapeTabId = urlParams.get('scrapeTabId');
+      var tabId = (scrapeTabId !== null) ? Number(scrapeTabId) : null;
+      vm.scrapeTab(tabId, true);
     });
 
     // Lifecycle and Callbacks -----------------------------------------------------------------------------------------
@@ -943,14 +946,14 @@ app.controller('PopupCtrl', [
     /**
      * Scrape the active tab to find downloadable content.
      */
-    vm.scrapeTab = (tab = {}, assign = false) => {
+    vm.scrapeTab = (tabId = null, assign = false) => {
       if (assign) {
         vm.media = [];
         vm.scraping = true;
       }
 
       // This defaults to activeTab if the tab ID is undefined.
-      let promise = $q.when(browser.tabs.executeScript(tab.id, {
+      let promise = $q.when(browser.tabs.executeScript(tabId, {
         file: '/content/scrape.js',
         runAt: 'document_end',
         allFrames: true
@@ -1022,7 +1025,7 @@ app.controller('PopupCtrl', [
             // Do not scrape hidden or discarded tabs.
             .filter(tab => !tab.hidden && !tab.discarded)
             // Scrape each tab for media.
-            .map(tab => vm.scrapeTab(tab, false))
+            .map(tab => vm.scrapeTab(tab.id, false))
           ).then(results => {
             // Flatten the resulting array of results for each tab.
             return results.reduce((media, tabResult) => {
