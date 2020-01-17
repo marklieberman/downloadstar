@@ -30,46 +30,54 @@ var sources = {
   ]
 };
 
-gulp.task('default', [ 'copy', 'lint', 'jsonlint', 'sass', 'watch' ]);
+function watchFiles () {
+  gulp.watch(sources.js, lintTask);
+  gulp.watch(sources.json, jsonlintTask);
+  gulp.watch(sources.sass, sassTask);
 
-gulp.task('travis', [ 'copy', 'lint', 'jsonlint', 'sass' ]);
+  // Other sass files import these, so build them when these change.
+  gulp.watch(sources.watch.sass, sassTask);
+}
 
-gulp.task('watch', function () {
-  gulp.watch(sources.js, [ 'lint' ]);
-  gulp.watch(sources.json, [ 'jsonlint' ]);
-  gulp.watch(sources.sass, [ 'sass' ]);
-  gulp.watch(sources.watch.sass, [ 'sass' ]);
-});
-
-gulp.task('sass', function () {
-  gulp.src(sources.sass)
+function sassTask () {
+  return gulp.src(sources.sass)
     .pipe(sass().on('error', sass.logError))
     .pipe(gulp.dest(function (file) {
       return file.base;
     }));
-});
+}
 
-gulp.task('lint', function () {
+function lintTask () {
   return gulp.src(sources.js)
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'));
-});
+}
 
-gulp.task('jsonlint', function () {
+function jsonlintTask () {
   return gulp.src(sources.json)
     .pipe(jsonlint())
     .pipe(jsonlint.reporter());
-});
+}
 
-gulp.task('copy', function () {
-  gulp.src('node_modules/@fortawesome/fontawesome-free/webfonts/*')
+function copyTask () {
+  return gulp.src('node_modules/@fortawesome/fontawesome-free/webfonts/*')
     .pipe(gulp.dest('src/common/fa-webfonts/'));
-});
+}
 
-gulp.task('dist', [ 'copy', 'sass' ], function () {
+function distTask () {
   return gulp.src(sources.dist)
     .pipe(zip('downloadstar.xpi', {
       compress: false
     }))
     .pipe(gulp.dest('dist'));
-});
+}
+
+exports.sass = sassTask;
+exports.lint = lintTask;
+exports.jsonlint = jsonlintTask;
+exports.copy = copyTask;
+exports.dist = distTask;
+
+exports.watch = gulp.series(sassTask, watchFiles);
+exports.travis = gulp.series(gulp.parallel(copyTask, lintTask, jsonlintTask, sassTask));
+exports.default = gulp.series(gulp.parallel(copyTask, lintTask, jsonlintTask, sassTask), watchFiles);
