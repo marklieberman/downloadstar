@@ -343,7 +343,7 @@ app.factory('MediaItem', [
       // Try to extract a file named using /filename.ext.
       function tryGetNameAndExt (mediaItem, input) {
         let match;
-        if ((match = /\b([^\/]+)\.([a-z0-9]+)(\?|#|$)/i.exec(input)) !== null) {
+        if ((match = /([^\/]+)\.([a-z0-9]+)(\?|#|$)/i.exec(input)) !== null) {
           if (match[1] && match[2]) {
             mediaItem.filename = decodeURIComponent(match[1]);
             mediaItem.extension = decodeURIComponent(match[2]);
