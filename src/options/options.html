@@ -12,6 +12,19 @@
       <h1 i18n="'optionsHeader'"></h1>
 
       <form id="options-form">
+        <!-- popup style -->
+        <div class="form-group">
+          <label i18n="'browserActionPopupType'"></label>
+          <select class="form-control"
+                  ng-model="vm.settings.browserActionPopupType"
+                  ng-change="vm.reconfigurePopup()">
+            <option value="popup"
+                    i18n="'popupTypePopup'"></option>
+            <option value="window"
+                    i18n="'popupTypeWindow'"></option>
+          </select>
+        </div>
+
         <!-- watch controls -->
         <div class="form-group">
           <div class="form-check">

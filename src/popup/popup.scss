@@ -38,6 +38,12 @@ body {
     min-width: 0px;
   }
 
+  /* remove min-width when opened as a window*/
+  &.in-window {
+    min-width: 0px;
+    min-height: 0px;
+  }
+
   background: linear-gradient(180deg, #fff 10px, #eee 50px, #eee 100%);
   overflow: hidden;
 }

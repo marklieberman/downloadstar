@@ -188,5 +188,14 @@
   },
   "showImagePreviewTitle": {
     "message": "Show thumbnail for image items"
+  },
+  "browserActionPopupType": {
+    "message": "Open Download Star In"
+  },
+  "popupTypePopup": {
+    "message": "A Popup"
+  },
+  "popupTypeWindow": {
+    "message": "A Window"
   }
 }
