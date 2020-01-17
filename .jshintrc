@@ -15,6 +15,7 @@
     "HTMLVideoElement": true,
 
     "URL": true,
+    "URLSearchParams": true,
     "Blob": true,
 
     "NodeFilter": true,

@@ -995,7 +995,7 @@ app.controller('PopupCtrl', [
         }
       }).catch(error => {
         // Something went wrong and the tab could not be scraped.
-        console.log('scrape tab failed', tab.id || 'activeTab', tab.index || 'activeTab', error);
+        console.log('scrape tab failed', tabId || 'activeTab', error);
         return [];
       }));
 
