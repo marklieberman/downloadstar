@@ -20,6 +20,14 @@ function getNearbyText (element) {
 }
 
 /**
+ * Strip the fragment from a URL.
+ */
+function stripFragment (url) {
+  let hash = url.indexOf('#');
+  return (~hash) ? url.slice(0, hash) : url;
+}
+
+/**
  * Extract the URls for other media in various tags.
  */
 function getMediaAndLinks () {
@@ -29,7 +37,7 @@ function getMediaAndLinks () {
       return {
         source: 'link',
         // SRC for frame elements.
-        url: link.href || link.src,
+        url: stripFragment(link.href || link.src),
         mime: null,
         tag: link.tagName,
         id: link.id,
@@ -44,7 +52,7 @@ function getMediaAndLinks () {
     Array.from(document.getElementsByTagName('img'), img => {
       return {
         source: 'embed',
-        url: img.src,
+        url: stripFragment(img.src),
         mime: 'image/unknown',
         tag: img.tagName,
         id: img.id,
@@ -59,6 +67,9 @@ function getMediaAndLinks () {
   );
 }
 
+/**
+ * Select elements that link to other documents.
+ */
 function getLinkElements () {
   return [].concat(
     Array.from(document.getElementsByTagName('a')),
@@ -83,7 +94,7 @@ function getAudioVideoMedia () {
     // Collect the sources defined for this audio/video element.
     let sources = Array.from(element.getElementsByTagName('source'), source => ({
       source: 'embed',
-      url: source.src,
+      url: stripFragment(source.src),
       mime: source.type,
       tag: element.tagName,
       id: element.id,
@@ -102,7 +113,7 @@ function getAudioVideoMedia () {
     if (!sources.length || !sources.find(source => source.url === currentSrc)) {
       media.push({
         source: 'embed',
-        url: currentSrc,
+        url: stripFragment(currentSrc),
         mime: null,
         tag: element.tagName,
         id: element.id,
@@ -144,7 +155,7 @@ function getLinksFromText () {
     while ((match = URL_REGEX.exec(treeWalker.currentNode.innerText)) !== null) {
       media.push({
         source: 'text',
-        url: match[0]
+        url: stripFragment(match[0])
       });
     }
   }
