@@ -597,7 +597,7 @@ function updateCountInBadge () {
     window.setTimeout(() => {
       state.badgeTimeout = null;
 
-      // Bin the items in the queue into waiting/running, skipped/completed, and errored.
+      // Count the number of waiting/running downloads.
       let count = state.queue.reduce((count, mediaItem) => {
         return mediaItem.isDone() ? count : (count + 1);
       }, 0);
