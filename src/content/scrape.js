@@ -28,7 +28,7 @@ function stripFragment (url) {
 }
 
 /**
- * Extract the URls for other media in various tags.
+ * Extract the URLs for other media in various tags.
  */
 function getMediaAndLinks () {
   // Select elements that link to other documents.
@@ -48,8 +48,8 @@ function getMediaAndLinks () {
         url: stripFragment(link.href || link.src),
         mime: null,
         tag: link.tagName,
-        id: link.id,
-        name: link.name,
+        id: link.id || null,
+        name: link.name || null,
         alt: link.alt || null,
         title: link.title || null,
         text: getNearbyText(link),
@@ -63,8 +63,8 @@ function getMediaAndLinks () {
         url: stripFragment(img.src),
         mime: 'image/unknown',
         tag: img.tagName,
-        id: img.id,
-        name: img.name,
+        id: img.id || null,
+        name: img.name || null,
         alt: img.alt || null,
         title: img.title || null,
         text: getNearbyText(img),
@@ -112,8 +112,8 @@ function getAudioVideoMedia () {
         url: stripFragment(currentSrc),
         mime: null,
         tag: element.tagName,
-        id: element.id,
-        name: element.name,
+        id: element.id || null,
+        name: element.name || null,
         alt: element.alt || null,
         title: element.title || null,
         text: getNearbyText(element)
@@ -125,10 +125,43 @@ function getAudioVideoMedia () {
 }
 
 /**
+ * Extract URLs from specific CSS properties.
+ */
+function getMediaFromStyles () {
+  // Create a TreeWalker that visits all ELEMENT nodes in the document body.
+  let treeWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT, {
+      acceptNode: () => NodeFilter.FILTER_ACCEPT
+  }, false);
+
+  let media = [];
+  while (treeWalker.nextNode()) {
+    let element = treeWalker.currentNode;
+    let computedStyle = window.getComputedStyle(element);
+
+    // Extract the background image.    
+    let backgroundImage = computedStyle.getPropertyValue('background-image');
+    if (backgroundImage && backgroundImage.startsWith('url(')) {
+      media.push({
+        source: 'embed',
+        url: backgroundImage.slice(5, -2),
+        tag: element.tagName,
+        id: element.id || null,
+        name: element.name || null,
+        alt: element.alt || null,
+        title: element.title || null,
+        text: getNearbyText(element)
+      });
+    }
+  }
+
+  return media;
+}
+
+/**
  * Extract plain text links from the document.
  */
 function getLinksFromText () {
-  // Create a TreeWalker that visits all TEXT nodes in the document.
+  // Create a TreeWalker that visits all TEXT nodes in the document body.
   let treeWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
       acceptNode: () => NodeFilter.FILTER_ACCEPT
   }, false);
@@ -137,10 +170,8 @@ function getLinksFromText () {
   const URL_REGEX = /(https?|ftp):\/\/(\S+)/ig;
 
   // Extract all plain-text links from the document text.
-  // Go to the sibling since once the node's innerText is inspected. Since innerText contains all child nodes' text,
-  // there is no reason to descend into the node.
   let media = [], match;
-  while (treeWalker.nextSibling() || treeWalker.nextNode()) {
+  while (treeWalker.nextNode()) {
     while ((match = URL_REGEX.exec(treeWalker.currentNode.wholeText)) !== null) {
       media.push({
         source: 'text',
@@ -163,6 +194,7 @@ var media = {
   items: [].concat(
     getMediaAndLinks(), 
     getAudioVideoMedia(), 
+    getMediaFromStyles(),
     getLinksFromText()
   ).filter(item => {
     // Eliminate invalid URLs.
