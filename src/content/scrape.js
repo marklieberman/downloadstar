@@ -133,24 +133,31 @@ function getMediaFromStyles () {
       acceptNode: () => NodeFilter.FILTER_ACCEPT
   }, false);
 
-  let media = [];
+  // Matches url("") tokens in CSS properties.
+  const CSS_URL_REGEX = /url\("([^"]+)"\)/ig;
+
+  let media = [], match;
   while (treeWalker.nextNode()) {
     let element = treeWalker.currentNode;
     let computedStyle = window.getComputedStyle(element);
 
     // Extract the background image.    
+    // Background images can be stacked by using multiple url tokens.
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/background-image
     let backgroundImage = computedStyle.getPropertyValue('background-image');
-    if (backgroundImage && backgroundImage.startsWith('url(')) {
-      media.push({
-        source: 'embed',
-        url: backgroundImage.slice(5, -2),
-        tag: element.tagName,
-        id: element.id || null,
-        name: element.name || null,
-        alt: element.alt || null,
-        title: element.title || null,
-        text: getNearbyText(element)
-      });
+    if (backgroundImage && (backgroundImage !== 'none')) {
+      while ((match = CSS_URL_REGEX.exec(backgroundImage)) !== null) {
+        media.push({
+          source: 'embed',
+          url: stripFragment(match[1]),
+          tag: element.tagName,
+          id: element.id || null,
+          name: element.name || null,
+          alt: element.alt || null,
+          title: element.title || null,
+          text: getNearbyText(element)
+        });
+      }
     }
   }
 
