@@ -31,9 +31,17 @@ function stripFragment (url) {
  * Extract the URls for other media in various tags.
  */
 function getMediaAndLinks () {
+  // Select elements that link to other documents.
+  let linkElements = [].concat(
+    Array.from(document.getElementsByTagName('a')),
+    Array.from(document.getElementsByTagName('area')),
+    Array.from(document.getElementsByTagName('frame')),
+    Array.from(document.getElementsByTagName('iframe'))
+  );
+
   return [].concat(
     // Collect the target of links.
-    Array.from(getLinkElements(), link => {
+    Array.from(linkElements, link => {
       return {
         source: 'link',
         // SRC for frame elements.
@@ -64,18 +72,6 @@ function getMediaAndLinks () {
         height: img.naturalHeight
       };
     })
-  );
-}
-
-/**
- * Select elements that link to other documents.
- */
-function getLinkElements () {
-  return [].concat(
-    Array.from(document.getElementsByTagName('a')),
-    Array.from(document.getElementsByTagName('area')),
-    Array.from(document.getElementsByTagName('frame')),
-    Array.from(document.getElementsByTagName('iframe'))
   );
 }
 
@@ -133,16 +129,9 @@ function getAudioVideoMedia () {
  */
 function getLinksFromText () {
   // Create a TreeWalker that visits all TEXT nodes in the document.
-  let treeWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT,
-    {
-      // Accept common text containing nodes.
-      acceptNode: (node) => {
-        if (node.tagName === 'P' || node.tagName === 'SPAN' || node.tagName === 'DIV') {
-          return NodeFilter.FILTER_ACCEPT;
-        }
-        return NodeFilter.FILTER_SKIP;
-      }
-    }, false);
+  let treeWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode: () => NodeFilter.FILTER_ACCEPT
+  }, false);
 
   // Matches between protocol and first whitespace character.
   const URL_REGEX = /(https?|ftp):\/\/(\S+)/ig;
@@ -152,7 +141,7 @@ function getLinksFromText () {
   // there is no reason to descend into the node.
   let media = [], match;
   while (treeWalker.nextSibling() || treeWalker.nextNode()) {
-    while ((match = URL_REGEX.exec(treeWalker.currentNode.innerText)) !== null) {
+    while ((match = URL_REGEX.exec(treeWalker.currentNode.wholeText)) !== null) {
       media.push({
         source: 'text',
         url: stripFragment(match[0])
@@ -171,7 +160,11 @@ var media = {
     topFrame: (window.top === window),
     title: String(document.title)
   },
-  items: [].concat(getMediaAndLinks(), getAudioVideoMedia(), getLinksFromText()).filter(item => {
+  items: [].concat(
+    getMediaAndLinks(), 
+    getAudioVideoMedia(), 
+    getLinksFromText()
+  ).filter(item => {
     // Eliminate invalid URLs.
     // Eliminate duplicate URLs on first encountered basis.
     if (!isValidUrl(item.url) || duplicates.has(item.url)) {
