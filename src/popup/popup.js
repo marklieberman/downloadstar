@@ -300,6 +300,8 @@ app.factory('MediaItem', [
       this.frameTitle = data.frameTitle;
       this.mime = data.mime;
       this.tag = data.tag;
+      this.id = data.id;
+      this.name = data.name;
 
       this.alt = data.alt;
       this.title = data.title;
@@ -476,6 +478,9 @@ app.factory('NamingMask', [
       file: (mediaItem) => mediaItem.filename,
       ext: (mediaItem) => mediaItem.extension,
       fileext: (mediaItem) => mediaItem.getFilename(),
+      tag: (mediaItem) => mediaItem.tag,
+      id: (mediaItem) => mediaItem.id,
+      name: (mediaItem) => mediaItem.name,
       alt: (mediaItem) => mediaItem.alt,
       title: (mediaItem) => mediaItem.title,
       text: (mediaItem) => mediaItem.text,

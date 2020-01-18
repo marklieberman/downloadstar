@@ -28,9 +28,12 @@ function getMediaAndLinks () {
     Array.from(getLinkElements(), link => {
       return {
         source: 'link',
-        url: link.href,
+        // SRC for frame elements.
+        url: link.href || link.src,
         mime: null,
         tag: link.tagName,
+        id: link.id,
+        name: link.name,
         alt: link.alt || null,
         title: link.title || null,
         text: getNearbyText(link),
@@ -44,6 +47,8 @@ function getMediaAndLinks () {
         url: img.src,
         mime: 'image/unknown',
         tag: img.tagName,
+        id: img.id,
+        name: img.name,
         alt: img.alt || null,
         title: img.title || null,
         text: getNearbyText(img),
@@ -57,7 +62,9 @@ function getMediaAndLinks () {
 function getLinkElements () {
   return [].concat(
     Array.from(document.getElementsByTagName('a')),
-    Array.from(document.getElementsByTagName('area'))
+    Array.from(document.getElementsByTagName('area')),
+    Array.from(document.getElementsByTagName('frame')),
+    Array.from(document.getElementsByTagName('iframe'))
   );
 }
 
@@ -79,6 +86,8 @@ function getAudioVideoMedia () {
       url: source.src,
       mime: source.type,
       tag: element.tagName,
+      id: element.id,
+      name: element.name,
       alt: element.alt || null,
       title: element.title || null,
       text: getNearbyText(element)
@@ -96,6 +105,8 @@ function getAudioVideoMedia () {
         url: currentSrc,
         mime: null,
         tag: element.tagName,
+        id: element.id,
+        name: element.name,
         alt: element.alt || null,
         title: element.title || null,
         text: getNearbyText(element)
