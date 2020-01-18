@@ -2,7 +2,8 @@
 
 const state = {
   concurrentDownloads: 0,         // Number of running downloads.
-  queue: []                       // Current queue of downloads.
+  queue: [],                      // Current queue of downloads.  
+  badgeTimeout: null              // Timeout to rate limit badge updates.
 };
 
 const settings = {
@@ -395,8 +396,9 @@ function onDownloadCreated (queueItem, downloadItem) {
   if (queueItem.isSkipOnConflict() && queueItem.wasRenamed(downloadItem.filename)) {
     // File got renamed when the download was created - it must already exist.
     console.log('cancel download - already exists', queueItem);
-    queueItem.setSkipped();
+    queueItem.setSkipped();    
     queueItem.cancel();
+    updateCountInBadge();
   }
 }
 
@@ -426,6 +428,7 @@ function onDownloadStopped (queueItem, completed) {
   } else {
     queueItem.setInterrupted();
   }
+  updateCountInBadge();
 
   // Remove the download from the native download manager.
   if (queueItem.isEraseHistory()) {
@@ -581,4 +584,31 @@ function dataURLToBlob (dataURI) {
     }
 
     return new Blob([ ab ], { type: mimeString });
+}
+
+/**
+ * Update the number of unfinished items in the badge.
+ */
+function updateCountInBadge () {
+  // This update can only happen about 3 times a second.
+  if (!state.badgeTimeout) {    
+    window.setTimeout(() => {
+      state.badgeTimeout = null;
+
+      // Bin the items in the queue into waiting/running, skipped/completed, and errored.
+      let count = state.queue.reduce((count, mediaItem) => {
+        return mediaItem.isDone() ? count : (count + 1);
+      }, 0);
+    
+      browser.browserAction.setBadgeBackgroundColor({
+        color: '#45a1ff'
+      });
+      browser.browserAction.setBadgeTextColor({
+        color: '#ffffff'
+      });
+      browser.browserAction.setBadgeText({
+        text: (count > 0) ? String(count) : null
+      });
+    }, 300);
+  }
 }
