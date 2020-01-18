@@ -31,8 +31,15 @@
 
   "browser_action": {
     "browser_style": false,
-    "default_icon": "icons/icon.svg",
-    "default_title": "Download Star"
+    "default_icon": "icons/icon-light.svg",
+    "default_title": "Download Star",
+    "theme_icons": [
+      {
+        "light": "icons/icon-light.svg",
+        "dark": "icons/icon-dark.svg",
+        "size": 32
+      }
+    ]
   },
 
   "background": {
