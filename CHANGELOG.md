@@ -1,5 +1,15 @@
 # Changelog
 
+### Version 2.0.4
+ - Added option to run as a popup window instead of a browser action popup.
+ - Added running download count in browser action icon badge.
+ - Added light and dark theme icons.
+ - Added scraping of CSS background-image styles.
+ - Added scripting of iframe/frame sources.
+ - Fixed filenames incorrectly parsed if first charater is non-word.
+ - Fixed different URL fragments cause duplicate items.
+ - Exposed the internal history and queue but these are WIP areas.
+
 ### Version 2.0.3
  - Disabled thumbnails by default and added a toggle in bottom of the popup.
  - Added function noFolder to strip slashes from a variable.
