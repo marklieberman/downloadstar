@@ -9,6 +9,16 @@
 
   <body ng-controller="HistoryCtrl as vm">
     <form name="dsPopupForm">
+      <h1>
+        Download Star History
+      </h1>
+
+      <div class="form-group">
+        <span style="text-decoration: underline">This area of the add-on is a work in progress.</span>
+        When the conflict action is "skip," the add-on will not attempt to download a file if both the URL and target
+        path are the same. The maximum number of items to keep in history is configured in the add-on options.
+      </div>
+
       <div class="form-group">
         <button class="btn btn-secondary" type="button"
                 ng-click="vm.clearHistory()">
@@ -20,7 +30,7 @@
         <thead>
           <tr>
             <th>URL</th>
-            <th>Path</th>
+            <th>Target Path</th>
           </tr>
         </thead>
         <tbody>

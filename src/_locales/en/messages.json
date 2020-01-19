@@ -12,9 +12,6 @@
   "beginDownloadButtonTitle": {
     "message": "Begin download"
   },
-  "toggleOptionsButtonTitle": {
-    "message": "Toggle options"
-  },
   "tabFilters": {
     "message": "Filters"
   },
@@ -197,5 +194,23 @@
   },
   "popupTypeWindow": {
     "message": "A Window"
+  },
+  "popupDropdownButtonTitle": {
+    "message": "Popup options"
+  },
+  "showOptionsPanel": {
+    "message": "Show options panel"
+  },
+  "hideOptionsPanel": {
+    "message": "Hide options panel"
+  },
+  "openQueueMenuItem": {
+    "message": "Open download queue"
+  },
+  "openHistoryMenuItem": {
+    "message": "Open download history"
+  },
+  "openAddonOptionsMenuItem": {
+    "message": "Open add-on options"
   }
 }

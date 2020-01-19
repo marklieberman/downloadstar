@@ -1101,6 +1101,50 @@ app.controller('PopupCtrl', [
     };
 
     /**
+     * Toggle visibility of the options panel.
+     */
+    vm.toggleOptionsPanel = () => {
+      vm.controls.showOptions = !vm.controls.showOptions;
+      vm.showTargetDropdown = false;
+    };
+
+    /**
+     * Open the queue page.
+     */
+    vm.openQueue = () => {
+      browser.windows.create({        
+        allowScriptsToClose: true,
+        type: 'popup',
+        url: '/queue/queue.html',
+        width: 800,
+        height: 600
+      });
+    };
+
+    /**
+     * Open the history page.
+     */
+    vm.openHistory = () => {
+      browser.windows.create({        
+        allowScriptsToClose: true,
+        type: 'popup',
+        url: '/history/history.html',
+        width: 800,
+        height: 600
+      });
+    };
+
+    /**
+     * Open the addon options.
+     */
+    vm.openAddonOptions = () => {
+      browser.tabs.create({        
+        url: '/options/options.html',
+        active: true
+      });
+    };
+
+    /**
      * Clear the fast filter and re-evaluate filters.
      */
     vm.clearFastFilter = function () {
@@ -1324,6 +1368,32 @@ app.controller('PopupCtrl', [
     };
 
   }]);
+
+// ---------------------------------------------------------------------------------------------------------------------
+// A very simple downdown menu directive.
+app.directive('simpleDropdown', [() => {
+  return {
+    restrict: 'A',
+    link: function (scope, element, attrs) {
+      // Add a click handler to the toggle element.
+      let toggle = document.querySelector(attrs.simpleDropdown);
+      toggle.addEventListener('click', () => {
+        if (element.hasClass('ng-hide')) {
+          element.removeClass('ng-hide');
+          window.setTimeout(() => {
+            window.addEventListener('click', onWindowClick);          
+          }, 0);
+        }
+      });
+
+      function onWindowClick () {
+        // Close the dropdown if a click lands anywhere.
+        element.addClass('ng-hide');
+        window.removeEventListener('click', onWindowClick);
+      }
+    }
+  };
+}]);
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Truncate the input with an ellipsis if it exceeds the maximum length.

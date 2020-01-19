@@ -391,9 +391,6 @@ function enqueueMediaItems (data) {
  * Invoked when a QueueItem starts downloading.
  */
 function onDownloadCreated (queueItem, downloadItem) {
-  // Record when the download started.
-  queueItem.start = new Date().getTime();
-
   // Detect existing files by checking if the download was renamed.
   if (queueItem.isSkipOnConflict() && queueItem.wasRenamed(downloadItem.filename)) {
     // File got renamed when the download was created - it must already exist.
@@ -527,6 +524,11 @@ function processNextQueuedItem () {
     promise = promise.then(() => {
       console.log('starting download', queueItem);
       return queueItem.download().then(() => {
+
+        // Record when the download started.
+        // Note: onDownloadCreated does not fire reliably for all downloads.
+        queueItem.start = new Date().getTime();
+
         // Increment the concurrent download counter.
         state.concurrentDownloads++;
       });

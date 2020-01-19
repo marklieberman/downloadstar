@@ -32,13 +32,38 @@
               </button>
             </div>
             <div class="input-group-append">
-              <!-- toggle options button -->
-              <button class="btn btn-outline-secondary toggle-options" type="button"
-                      ng-class="{ 'active': vm.controls.showOptions }"
-                      ng-click="vm.controls.showOptions = !vm.controls.showOptions"
-                      i18n-title="'toggleOptionsButtonTitle'">
-                <i class="fa fa-cog"></i>
-              </button>
+              <!-- popup dropdown menu -->
+              <ul class="popup-dropdown ng-hide"
+                  simple-dropdown=".popup-dropdown-toggle">
+                <li>
+                  <a href=""
+                     ng-click="vm.openQueue()"
+                     i18n="'openQueueMenuItem'"></a>
+                </li>
+                <li>
+                  <a href=""
+                     ng-click="vm.openHistory()"
+                     i18n="'openHistoryMenuItem'"></a>
+                </li>
+                <li>
+                  <a href=""
+                     ng-click="vm.openAddonOptions()"
+                     i18n="'openAddonOptionsMenuItem'"></a>
+                </li>
+                <li>
+                  <a href=""
+                     ng-click="vm.toggleOptionsPanel()">
+                    <span ng-show="vm.controls.showOptions"
+                          i18n="'hideOptionsPanel'"></span>
+                    <span ng-hide="vm.controls.showOptions"
+                          i18n="'showOptionsPanel'"></span>
+                  </a>
+                </li>
+              </ul>
+              <button class="btn btn-outline-secondary active popup-dropdown-toggle" type="button"
+                      i18n-title="'popupDropdownButtonTitle'">
+                <i class="fa fa-caret-down"></i>
+              </button>              
             </div>
           </div>
           <!-- download location error message -->
