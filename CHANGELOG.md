@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 2.0.5
+ - Fix scraping fails if A tag has an empty href
+
 ### Version 2.0.4
  - Added option to run as a popup window instead of a browser action popup.
  - Added running download count in browser action icon badge.

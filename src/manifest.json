@@ -2,7 +2,7 @@
 
   "manifest_version": 2,
   "name": "Download Star",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "applications": {
     "gecko": {
       "id": "{8cc0b007-e40b-46e8-9e50-e3bf021c94ab}",
