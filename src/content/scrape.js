@@ -23,8 +23,11 @@ function getNearbyText (element) {
  * Strip the fragment from a URL.
  */
 function stripFragment (url) {
-  let hash = url.indexOf('#');
-  return (~hash) ? url.slice(0, hash) : url;
+  if (url) {
+    let hash = url.indexOf('#');
+    return (~hash) ? url.slice(0, hash) : url;
+  }
+  return url;
 }
 
 /**
